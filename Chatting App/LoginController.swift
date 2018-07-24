@@ -17,20 +17,41 @@ class LoginController: UIViewController {
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var signButton: UIButton!
     
-    private var ref: DatabaseReference!
-
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        ref = Database.database().reference(fromURL: "https://chatting-app-a2f94.firebaseio.com/")
-        ref.updateChildValues(["somevalue": 123456])
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        updateViewContentForSelectedSegment()
+    }
+    
+    private func updateViewContentForSelectedSegment() {
+        nameTextField.isHidden = segmentControl.selectedSegmentIndex == 0
+        let title = segmentControl.titleForSegment(at: segmentControl.selectedSegmentIndex)
+        signButton.setTitle(title, for: .normal)
     }
     
     @IBAction func segmentValueChange(_ sender: Any) {
+        updateViewContentForSelectedSegment()
     }
     
     @IBAction func signButtonAction(_ sender: Any) {
+        guard let name = nameTextField.text, let email = emailTextField.text, let password = passwordTextField.text else { return print("Please fill up all the fields") }
+        
+        Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
+            
+            if error != nil {return}
+            guard let uid = authResult?.user.uid else { return }
+            let databaseReference = Database.database().reference(fromURL: "https://chatting-app-a2f94.firebaseio.com/")
+            let usersReference = databaseReference.child("users").child(uid)
+            let values = ["name": name, "email": email]
+            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
+                if err != nil {return}
+                print("Saved user into firebase db")
+            })
+        }
     }
     
 }

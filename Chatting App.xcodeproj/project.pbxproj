@@ -12,7 +12,7 @@
 		81422F7421061DEC00282423 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81422F7221061DEC00282423 /* Main.storyboard */; };
 		81422F7621061DED00282423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81422F7521061DED00282423 /* Assets.xcassets */; };
 		81422F7921061DED00282423 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81422F7721061DED00282423 /* LaunchScreen.storyboard */; };
-		81422F8121061FF300282423 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 81422F8021061FF300282423 /* GoogleService-Info.plist */; };
+		815AF1A3210720A9001A2E0B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */; };
 		BFF73F7B60D0E15657D0F0E8 /* Pods_Chatting_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -26,7 +26,7 @@
 		81422F7521061DED00282423 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		81422F7821061DED00282423 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		81422F7A21061DED00282423 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		81422F8021061FF300282423 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Chatting_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -78,7 +78,7 @@
 				81422F7521061DED00282423 /* Assets.xcassets */,
 				81422F7721061DED00282423 /* LaunchScreen.storyboard */,
 				81422F7A21061DED00282423 /* Info.plist */,
-				81422F8021061FF300282423 /* GoogleService-Info.plist */,
+				815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */,
 			);
 			path = "Chatting App";
 			sourceTree = "<group>";
@@ -152,7 +152,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81422F7921061DED00282423 /* LaunchScreen.storyboard in Resources */,
-				81422F8121061FF300282423 /* GoogleService-Info.plist in Resources */,
+				815AF1A3210720A9001A2E0B /* GoogleService-Info.plist in Resources */,
 				81422F7621061DED00282423 /* Assets.xcassets in Resources */,
 				81422F7421061DEC00282423 /* Main.storyboard in Resources */,
 			);
@@ -359,7 +359,10 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Chatting App/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.rajubd49.Chatting-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -376,7 +379,10 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "Chatting App/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.rajubd49.Chatting-App";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

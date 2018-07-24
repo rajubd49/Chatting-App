@@ -53,13 +53,13 @@
                             </stackView>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kep-6j-aOe">
                                 <rect key="frame" x="24" y="391" width="327" height="30"/>
-                                <state key="normal" title="Sign Up"/>
+                                <state key="normal" title="Sign In"/>
                                 <connections>
                                     <action selector="signButtonAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="S0T-VF-CAV"/>
                                 </connections>
                             </button>
                         </subviews>
-                        <color key="backgroundColor" white="0.67000000000000004" alpha="0.1212275256849315" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
                             <constraint firstItem="kep-6j-aOe" firstAttribute="leading" secondItem="U9s-82-H5L" secondAttribute="leading" id="CnB-U5-ElU"/>
                             <constraint firstItem="U9s-82-H5L" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="KYB-gg-Pv1"/>
