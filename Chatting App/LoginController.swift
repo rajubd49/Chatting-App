@@ -25,7 +25,6 @@ class LoginController: UIViewController {
         
         ref = Database.database().reference(fromURL: "https://chatting-app-a2f94.firebaseio.com/")
         ref.updateChildValues(["somevalue": 123456])
-        
     }
     
     @IBAction func segmentValueChange(_ sender: Any) {
