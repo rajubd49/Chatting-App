@@ -1,21 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" systemVersion="17A277" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14113" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14088"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Login Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="LoginController" customModule="Chatting_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <subviews>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="PRz-xf-Aoh">
+                                <rect key="frame" x="24" y="248" width="327" height="29"/>
+                                <segments>
+                                    <segment title="Sign In"/>
+                                    <segment title="Sign Up"/>
+                                </segments>
+                                <connections>
+                                    <action selector="segmentValueChange:" destination="BYZ-38-t0r" eventType="valueChanged" id="GJV-74-lxi"/>
+                                </connections>
+                            </segmentedControl>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" spacing="16" translatesAutoresizingMaskIntoConstraints="NO" id="U9s-82-H5L">
+                                <rect key="frame" x="24" y="292" width="327" height="83"/>
+                                <subviews>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Name" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="8o5-sb-5fK">
+                                        <rect key="frame" x="0.0" y="0.0" width="327" height="17"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits"/>
+                                    </textField>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Email" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="6uz-F0-Dwp">
+                                        <rect key="frame" x="0.0" y="33" width="327" height="17"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" keyboardType="emailAddress"/>
+                                    </textField>
+                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Password" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="GFY-46-bvB">
+                                        <rect key="frame" x="0.0" y="66" width="327" height="17"/>
+                                        <nil key="textColor"/>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
+                                    </textField>
+                                </subviews>
+                            </stackView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kep-6j-aOe">
+                                <rect key="frame" x="24" y="391" width="327" height="30"/>
+                                <state key="normal" title="Sign Up"/>
+                                <connections>
+                                    <action selector="signButtonAction:" destination="BYZ-38-t0r" eventType="touchUpInside" id="S0T-VF-CAV"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="0.67000000000000004" alpha="0.1212275256849315" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="kep-6j-aOe" firstAttribute="leading" secondItem="U9s-82-H5L" secondAttribute="leading" id="CnB-U5-ElU"/>
+                            <constraint firstItem="U9s-82-H5L" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="KYB-gg-Pv1"/>
+                            <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="U9s-82-H5L" secondAttribute="trailing" constant="24" id="S0W-bc-F8b"/>
+                            <constraint firstItem="kep-6j-aOe" firstAttribute="trailing" secondItem="U9s-82-H5L" secondAttribute="trailing" id="dUA-WC-cLo"/>
+                            <constraint firstItem="U9s-82-H5L" firstAttribute="trailing" secondItem="PRz-xf-Aoh" secondAttribute="trailing" id="e1y-0Y-cQq"/>
+                            <constraint firstItem="U9s-82-H5L" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="edZ-tk-Cyp"/>
+                            <constraint firstItem="U9s-82-H5L" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" constant="24" id="j9K-fk-kbT"/>
+                            <constraint firstItem="U9s-82-H5L" firstAttribute="leading" secondItem="PRz-xf-Aoh" secondAttribute="leading" id="l5h-oa-64Z"/>
+                            <constraint firstItem="kep-6j-aOe" firstAttribute="top" secondItem="U9s-82-H5L" secondAttribute="bottom" constant="16" id="pB6-aU-Ylf"/>
+                            <constraint firstItem="U9s-82-H5L" firstAttribute="top" secondItem="PRz-xf-Aoh" secondAttribute="bottom" constant="16" id="psI-0z-XxM"/>
+                        </constraints>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
                     </view>
+                    <connections>
+                        <outlet property="emailTextField" destination="6uz-F0-Dwp" id="7e8-wj-gq1"/>
+                        <outlet property="nameTextField" destination="8o5-sb-5fK" id="cqg-Hb-uBj"/>
+                        <outlet property="passwordTextField" destination="GFY-46-bvB" id="Sa3-fr-B0e"/>
+                        <outlet property="segmentControl" destination="PRz-xf-Aoh" id="o5X-KM-uo5"/>
+                        <outlet property="signButton" destination="kep-6j-aOe" id="xVJ-bx-nUX"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
