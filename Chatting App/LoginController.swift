@@ -38,18 +38,33 @@ class LoginController: UIViewController {
     }
     
     @IBAction func signButtonAction(_ sender: Any) {
+        segmentControl.selectedSegmentIndex == 0 ?  signinUser() : signupUser()
+    }
+    
+    private func signinUser() {
+        guard let email = emailTextField.text, let password = passwordTextField.text else { return print("Please fill up all the fields") }
+        
+        Auth.auth().signIn(withEmail: email, password: password) { (authResult, error) in
+            
+            if error != nil { print(error!); return }
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    private func signupUser() {
         guard let name = nameTextField.text, let email = emailTextField.text, let password = passwordTextField.text else { return print("Please fill up all the fields") }
         
         Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
             
-            if error != nil {return}
-            guard let uid = authResult?.user.uid else { return }
+            if error != nil { print(error!); return }
+            guard let uid = authResult?.user.uid else { print("uid not found"); return }
             let databaseReference = Database.database().reference(fromURL: "https://chatting-app-a2f94.firebaseio.com/")
             let usersReference = databaseReference.child("users").child(uid)
             let values = ["name": name, "email": email]
             usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if err != nil {return}
-                print("Saved user into firebase db")
+                if err != nil { print(err!); return }
+                self.segmentControl.selectedSegmentIndex = 0
+                self.updateViewContentForSelectedSegment()
             })
         }
     }
