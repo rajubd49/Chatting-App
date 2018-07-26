@@ -11,6 +11,14 @@ import Firebase
 
 class MessagesController: UITableViewController {
 
+    var users = [User] () {
+        didSet {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
     lazy var signout: UIBarButtonItem = {
         UIBarButtonItem.init(barButtonSystemItem: .action, target: self, action: #selector(self.signoutAction))
     }()
@@ -37,9 +45,11 @@ class MessagesController: UITableViewController {
             perform(#selector(signoutAction), with: self, afterDelay: 0)
         } else {
             if let uid = Auth.auth().currentUser?.uid {
-                Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
-                    print(snapshot)
-                    if let dictionary = snapshot.value as? [String: Any] {
+                Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (dataSnapshot) in
+                    print(dataSnapshot)
+                    if let dictionary = dataSnapshot.value as? [String: AnyObject] {
+                        let user = User(dictionary: dictionary)
+                        self.users.append(user)
                         self.navigationItem.title = dictionary["name"] as? String
                     }
                 }, withCancel: nil)
@@ -70,12 +80,14 @@ class MessagesController: UITableViewController {
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
+        return self.users.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MessagesCell", for: indexPath)
-        cell.textLabel?.text = "LALALALA"
+        let user = self.users[indexPath.row]
+        cell.textLabel?.text = user.name
+        cell.detailTextLabel?.text = user.email
         return cell
     }
 
