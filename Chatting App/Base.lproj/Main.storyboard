@@ -134,6 +134,51 @@
             </objects>
             <point key="canvasLocation" x="25" y="725"/>
         </scene>
+        <!--New Message Controller-->
+        <scene sceneID="Gma-Zc-4w0">
+            <objects>
+                <tableViewController storyboardIdentifier="NewMessageController" id="j0e-rr-Bk8" customClass="NewMessageController" customModule="Chatting_App" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="45K-3W-pTi">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="NewMessageCell" textLabel="iBP-H7-xaW" detailTextLabel="yRJ-ks-fKC" style="IBUITableViewCellStyleSubtitle" id="78W-Zu-Gfh">
+                                <rect key="frame" x="0.0" y="28" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="78W-Zu-Gfh" id="pcU-pi-kgw">
+                                    <rect key="frame" x="0.0" y="0.0" width="341" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="iBP-H7-xaW">
+                                            <rect key="frame" x="16" y="5" width="33.5" height="20.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" insetsLayoutMarginsFromSafeArea="NO" text="Subtitle" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="yRJ-ks-fKC">
+                                            <rect key="frame" x="16" y="25.5" width="44" height="14.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <nil key="textColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="j0e-rr-Bk8" id="p1w-Nq-DSb"/>
+                            <outlet property="delegate" destination="j0e-rr-Bk8" id="7nq-Ft-za5"/>
+                        </connections>
+                    </tableView>
+                    <navigationItem key="navigationItem" id="d69-N3-MXw"/>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Mjv-4C-wre" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1668" y="726.38680659670172"/>
+        </scene>
         <!--Navigation Controller-->
         <scene sceneID="smX-Kz-nUf">
             <objects>
@@ -153,22 +198,22 @@
             <point key="canvasLocation" x="-702" y="725"/>
         </scene>
         <!--Navigation Controller-->
-        <scene sceneID="Nu7-bS-VVE">
+        <scene sceneID="bYm-8s-38U">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Lh3-Q0-fJ1" sceneMemberID="viewController">
+                <navigationController storyboardIdentifier="NewMessageNavController" automaticallyAdjustsScrollViewInsets="NO" id="vB6-bw-W12" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="Wyb-X2-lER">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="BJP-Nj-a6T">
                         <rect key="frame" x="0.0" y="20" width="375" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
-                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="DFa-OQ-i5F"/>
+                        <segue destination="j0e-rr-Bk8" kind="relationship" relationship="rootViewController" id="hgk-5n-AUW"/>
                     </connections>
                 </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="u4C-S8-AEb" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="eM0-Ev-4Jf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-703" y="54"/>
+            <point key="canvasLocation" x="728.79999999999995" y="726.38680659670172"/>
         </scene>
     </scenes>
 </document>

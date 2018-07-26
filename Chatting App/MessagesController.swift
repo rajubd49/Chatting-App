@@ -12,18 +12,18 @@ import Firebase
 class MessagesController: UITableViewController {
 
     lazy var signout: UIBarButtonItem = {
-        UIBarButtonItem.init(barButtonSystemItem: .action, target: self, action: #selector(self.signoutUser))
+        UIBarButtonItem.init(barButtonSystemItem: .action, target: self, action: #selector(self.signoutAction))
     }()
     
-    lazy var message: UIBarButtonItem = {
-        UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(self.newMessage))
+    lazy var newMessage: UIBarButtonItem = {
+        UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(self.newMessageAction))
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         navigationItem.leftBarButtonItem = signout
-        navigationItem.rightBarButtonItem = message
+        navigationItem.rightBarButtonItem = newMessage
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -34,7 +34,7 @@ class MessagesController: UITableViewController {
     
     fileprivate func chekedLoginStatusWithFetchUser() {
         if Auth.auth().currentUser?.uid == nil {
-            perform(#selector(signoutUser), with: self, afterDelay: 0)
+            perform(#selector(signoutAction), with: self, afterDelay: 0)
         } else {
             if let uid = Auth.auth().currentUser?.uid {
                 Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (snapshot) in
@@ -48,7 +48,7 @@ class MessagesController: UITableViewController {
         
     }
 
-    @objc private func signoutUser() {
+    @objc private func signoutAction() {
         
         do {
             try Auth.auth().signOut()
@@ -61,8 +61,10 @@ class MessagesController: UITableViewController {
         }
     }
     
-    @objc private func newMessage() {
-        
+    @objc private func newMessageAction() {
+        if let newMessageNavController =  storyboard?.instantiateViewController(withIdentifier: "NewMessageNavController") {
+            present(newMessageNavController, animated: true, completion: nil)
+        }
     }
     
     // MARK: - Table view data source
