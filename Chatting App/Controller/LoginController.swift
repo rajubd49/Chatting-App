@@ -8,9 +8,11 @@
 
 import UIKit
 import Firebase
+import FirebaseStorage
 
 class LoginController: UIViewController {
 
+    @IBOutlet weak var imageView: UIImageView!
     @IBOutlet weak var segmentControl: UISegmentedControl!
     @IBOutlet weak var nameTextField: UITextField!
     @IBOutlet weak var emailTextField: UITextField!
@@ -25,6 +27,8 @@ class LoginController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateViewContentForSelectedSegment()
+        imageView.isUserInteractionEnabled = true
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.imageViewAction)))
     }
     
     private func updateViewContentForSelectedSegment() {
@@ -58,16 +62,28 @@ class LoginController: UIViewController {
             
             if error != nil { print(error!); return }
             guard let uid = authResult?.user.uid else { print("uid not found"); return }
-            let databaseReference = Database.database().reference(fromURL: "https://chatting-app-a2f94.firebaseio.com/")
-            let usersReference = databaseReference.child("users").child(uid)
-            let values = ["name": name, "email": email]
-            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
-                if err != nil { print(err!); return }
-                self.segmentControl.selectedSegmentIndex = 0
-                self.updateViewContentForSelectedSegment()
-            })
+            let imageName = UUID().uuidString
+            let storageReference = Storage.storage().reference().child("profile_images").child("\(imageName).png")
+            if let imageData = UIImagePNGRepresentation(self.imageView.image!) {
+                storageReference.putData(imageData, metadata: nil, completion: { (storageMetadata, error) in
+                    if error != nil { print(error!); return }
+                    storageReference.downloadURL(completion: { (url, error) in
+                        if error != nil { print(error!); return }
+                        if let imageUrlString = url?.absoluteString {
+                            let databaseReference = Database.database().reference(fromURL: "https://chatting-app-a2f94.firebaseio.com/")
+                            let usersReference = databaseReference.child("users").child(uid)
+                            let values = ["name": name, "email": email, "imageurl": imageUrlString]
+                            usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
+                                if err != nil { print(err!); return }
+                                self.segmentControl.selectedSegmentIndex = 0
+                                self.updateViewContentForSelectedSegment()
+                            })
+                        }
+                    })
+                })
+            }
         }
     }
-    
+
 }
 

@@ -49,6 +49,7 @@ class MessagesController: UITableViewController {
                     print(dataSnapshot)
                     if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                         let user = User(dictionary: dictionary)
+                        self.users.removeAll()
                         self.users.append(user)
                         self.navigationItem.title = dictionary["name"] as? String
                     }
@@ -84,10 +85,11 @@ class MessagesController: UITableViewController {
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "MessagesCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
         let user = self.users[indexPath.row]
-        cell.textLabel?.text = user.name
-        cell.detailTextLabel?.text = user.email
+        cell.nameLabel?.text = user.name
+        cell.emailLabel?.text = user.email
+        cell.profileImageView?.loadImage(urlString: user.imageurl ?? "")
         return cell
     }
 

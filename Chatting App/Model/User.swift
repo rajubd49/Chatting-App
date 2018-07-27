@@ -11,10 +11,12 @@ import UIKit
 class User: NSObject {
     var name: String?
     var email: String?
+    var imageurl: String?
 
     init(dictionary: [String: AnyObject]) {
         super.init()
         name = dictionary["name"] as? String
         email = dictionary["email"] as? String
+        imageurl = dictionary["imageurl"] as? String
     }
 }

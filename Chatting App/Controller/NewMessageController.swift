@@ -52,10 +52,11 @@ class NewMessageController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "NewMessageCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
         let user = self.users[indexPath.row]
-        cell.textLabel?.text = user.name
-        cell.detailTextLabel?.text = user.email
+        cell.nameLabel?.text = user.name
+        cell.emailLabel?.text = user.email
+        cell.profileImageView?.loadImage(urlString: user.imageurl ?? "")
         return cell
     }
 
