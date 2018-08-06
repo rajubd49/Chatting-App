@@ -18,6 +18,7 @@ class LoginController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var signButton: UIButton!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,11 +28,11 @@ class LoginController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateViewContentForSelectedSegment()
-        imageView.isUserInteractionEnabled = true
         imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.imageViewAction)))
     }
     
     private func updateViewContentForSelectedSegment() {
+        self.imageView.isUserInteractionEnabled = segmentControl.selectedSegmentIndex == 1
         nameTextField.isHidden = segmentControl.selectedSegmentIndex == 0
         let title = segmentControl.titleForSegment(at: segmentControl.selectedSegmentIndex)
         signButton.setTitle(title, for: .normal)
@@ -47,16 +48,19 @@ class LoginController: UIViewController {
     
     private func signinUser() {
         guard let email = emailTextField.text, let password = passwordTextField.text else { return print("Please fill up all the fields") }
-        
+        activityIndicator.startAnimating()
+
         Auth.auth().signIn(withEmail: email, password: password) { (authResult, error) in
             
             if error != nil { print(error!); return }
+            self.activityIndicator.stopAnimating()
             self.dismiss(animated: true, completion: nil)
         }
     }
     
     private func signupUser() {
         guard let name = nameTextField.text, let email = emailTextField.text, let password = passwordTextField.text else { return print("Please fill up all the fields") }
+        activityIndicator.startAnimating()
         
         Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
             
@@ -64,7 +68,7 @@ class LoginController: UIViewController {
             guard let uid = authResult?.user.uid else { print("uid not found"); return }
             let imageName = UUID().uuidString
             let storageReference = Storage.storage().reference().child("profile_images").child("\(imageName).png")
-            if let imageData = UIImagePNGRepresentation(self.imageView.image!) {
+            if let image = self.imageView.image, let imageData = UIImageJPEGRepresentation(image, 0.1) {
                 storageReference.putData(imageData, metadata: nil, completion: { (storageMetadata, error) in
                     if error != nil { print(error!); return }
                     storageReference.downloadURL(completion: { (url, error) in
@@ -75,7 +79,10 @@ class LoginController: UIViewController {
                             let values = ["name": name, "email": email, "imageurl": imageUrlString]
                             usersReference.updateChildValues(values, withCompletionBlock: { (err, ref) in
                                 if err != nil { print(err!); return }
+                                self.activityIndicator.stopAnimating()
                                 self.segmentControl.selectedSegmentIndex = 0
+                                self.imageView.image = UIImage(named: "chat")
+                                self.imageView.isUserInteractionEnabled = false
                                 self.updateViewContentForSelectedSegment()
                             })
                         }
@@ -85,5 +92,31 @@ class LoginController: UIViewController {
         }
     }
 
+}
+
+extension LoginController:UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    @objc func imageViewAction() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        present(imagePicker, animated: true, completion: nil)
+    }
+    
+    // MARK: - UIImagePickerController Delegate
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let editedImage = info["UIImagePickerControllerEditedImage"] {
+            imageView.image = editedImage as? UIImage
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] {
+            imageView.image = originalImage as? UIImage
+        }
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
 }
 

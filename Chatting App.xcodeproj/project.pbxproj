@@ -13,10 +13,10 @@
 		81422F7621061DED00282423 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 81422F7521061DED00282423 /* Assets.xcassets */; };
 		81422F7921061DED00282423 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81422F7721061DED00282423 /* LaunchScreen.storyboard */; };
 		8149B3BF210A11AA00A53B0F /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8149B3BE210A11AA00A53B0F /* User.swift */; };
+		81587E9121188A5D00703E33 /* MessageLogController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81587E9021188A5D00703E33 /* MessageLogController.swift */; };
 		815AF1A3210720A9001A2E0B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */; };
 		815AF1A521072ABE001A2E0B /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815AF1A421072ABE001A2E0B /* MessagesController.swift */; };
 		815AF1A721075666001A2E0B /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815AF1A621075666001A2E0B /* NewMessageController.swift */; };
-		81E0938A210B1B3400B38B52 /* LoginImagePickerExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E09389210B1B3400B38B52 /* LoginImagePickerExtension.swift */; };
 		81E0938C210B3CF100B38B52 /* ImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0938B210B3CF100B38B52 /* ImageExtension.swift */; };
 		81E0938E210B41E700B38B52 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0938D210B41E700B38B52 /* UserCell.swift */; };
 		BFF73F7B60D0E15657D0F0E8 /* Pods_Chatting_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */; };
@@ -33,10 +33,10 @@
 		81422F7821061DED00282423 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		81422F7A21061DED00282423 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8149B3BE210A11AA00A53B0F /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		81587E9021188A5D00703E33 /* MessageLogController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLogController.swift; sourceTree = "<group>"; };
 		815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		815AF1A421072ABE001A2E0B /* MessagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		815AF1A621075666001A2E0B /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
-		81E09389210B1B3400B38B52 /* LoginImagePickerExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginImagePickerExtension.swift; sourceTree = "<group>"; };
 		81E0938B210B3CF100B38B52 /* ImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageExtension.swift; sourceTree = "<group>"; };
 		81E0938D210B41E700B38B52 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Chatting_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,6 +87,7 @@
 				8149B3BD210A111200A53B0F /* Model */,
 				81E09387210B1A0C00B38B52 /* View */,
 				81E09388210B1A1700B38B52 /* Controller */,
+				81587E8F2118767200703E33 /* Extension */,
 				81422F6E21061DEC00282423 /* AppDelegate.swift */,
 				81422F7221061DEC00282423 /* Main.storyboard */,
 				81422F7521061DED00282423 /* Assets.xcassets */,
@@ -105,6 +106,14 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
+		81587E8F2118767200703E33 /* Extension */ = {
+			isa = PBXGroup;
+			children = (
+				81E0938B210B3CF100B38B52 /* ImageExtension.swift */,
+			);
+			path = Extension;
+			sourceTree = "<group>";
+		};
 		81E09387210B1A0C00B38B52 /* View */ = {
 			isa = PBXGroup;
 			children = (
@@ -117,10 +126,9 @@
 			isa = PBXGroup;
 			children = (
 				81422F7021061DEC00282423 /* LoginController.swift */,
-				81E09389210B1B3400B38B52 /* LoginImagePickerExtension.swift */,
-				81E0938B210B3CF100B38B52 /* ImageExtension.swift */,
 				815AF1A421072ABE001A2E0B /* MessagesController.swift */,
 				815AF1A621075666001A2E0B /* NewMessageController.swift */,
+				81587E9021188A5D00703E33 /* MessageLogController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -252,9 +260,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				81587E9121188A5D00703E33 /* MessageLogController.swift in Sources */,
 				81E0938E210B41E700B38B52 /* UserCell.swift in Sources */,
 				815AF1A721075666001A2E0B /* NewMessageController.swift in Sources */,
-				81E0938A210B1B3400B38B52 /* LoginImagePickerExtension.swift in Sources */,
 				81422F7121061DEC00282423 /* LoginController.swift in Sources */,
 				81E0938C210B3CF100B38B52 /* ImageExtension.swift in Sources */,
 				81422F6F21061DEC00282423 /* AppDelegate.swift in Sources */,

@@ -13,6 +13,7 @@ fileprivate let imageCache = NSCache<NSString, UIImage>()
 
 extension UIImageView {
     func loadImage(urlString: String) {
+        self.image = nil
         if let imageFromCache = imageCache.object(forKey: urlString as NSString) {
             self.image = imageFromCache
             return

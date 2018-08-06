@@ -10,7 +10,11 @@ import UIKit
 import Firebase
 
 class MessagesController: UITableViewController {
-
+    
+    @IBOutlet weak var navView: UIView!
+    @IBOutlet weak var navImageView: UIImageView!
+    @IBOutlet weak var navTitleLabel: UILabel!
+    
     var users = [User] () {
         didSet {
             DispatchQueue.main.async {
@@ -32,6 +36,8 @@ class MessagesController: UITableViewController {
 
         navigationItem.leftBarButtonItem = signout
         navigationItem.rightBarButtonItem = newMessage
+        navView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.navViewAction)))
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -49,9 +55,10 @@ class MessagesController: UITableViewController {
                     print(dataSnapshot)
                     if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                         let user = User(dictionary: dictionary)
-                        self.users.removeAll()
-                        self.users.append(user)
-                        self.navigationItem.title = dictionary["name"] as? String
+                        self.navTitleLabel.text = user.name
+                        if let imageUrl = user.imageurl {
+                            self.navImageView.loadImage(urlString: imageUrl)
+                        }
                     }
                 }, withCancel: nil)
             }
@@ -76,6 +83,10 @@ class MessagesController: UITableViewController {
         if let newMessageNavController =  storyboard?.instantiateViewController(withIdentifier: "NewMessageNavController") {
             present(newMessageNavController, animated: true, completion: nil)
         }
+    }
+    
+    @IBAction func navViewAction(_ sender: Any) {
+        performSegue(withIdentifier: "MessageLogSegueID", sender: self)
     }
     
     // MARK: - Table view data source
