@@ -17,6 +17,7 @@
 		815AF1A3210720A9001A2E0B /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */; };
 		815AF1A521072ABE001A2E0B /* MessagesController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815AF1A421072ABE001A2E0B /* MessagesController.swift */; };
 		815AF1A721075666001A2E0B /* NewMessageController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815AF1A621075666001A2E0B /* NewMessageController.swift */; };
+		8194E9EF2121C5360038FE7D /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8194E9EE2121C5360038FE7D /* Message.swift */; };
 		81E0938C210B3CF100B38B52 /* ImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0938B210B3CF100B38B52 /* ImageExtension.swift */; };
 		81E0938E210B41E700B38B52 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0938D210B41E700B38B52 /* UserCell.swift */; };
 		BFF73F7B60D0E15657D0F0E8 /* Pods_Chatting_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */; };
@@ -37,6 +38,7 @@
 		815AF1A2210720A8001A2E0B /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		815AF1A421072ABE001A2E0B /* MessagesController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessagesController.swift; sourceTree = "<group>"; };
 		815AF1A621075666001A2E0B /* NewMessageController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMessageController.swift; sourceTree = "<group>"; };
+		8194E9EE2121C5360038FE7D /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		81E0938B210B3CF100B38B52 /* ImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageExtension.swift; sourceTree = "<group>"; };
 		81E0938D210B41E700B38B52 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
 		D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Chatting_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -102,6 +104,7 @@
 			isa = PBXGroup;
 			children = (
 				8149B3BE210A11AA00A53B0F /* User.swift */,
+				8194E9EE2121C5360038FE7D /* Message.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -263,6 +266,7 @@
 				81587E9121188A5D00703E33 /* MessageLogController.swift in Sources */,
 				81E0938E210B41E700B38B52 /* UserCell.swift in Sources */,
 				815AF1A721075666001A2E0B /* NewMessageController.swift in Sources */,
+				8194E9EF2121C5360038FE7D /* Message.swift in Sources */,
 				81422F7121061DEC00282423 /* LoginController.swift in Sources */,
 				81E0938C210B3CF100B38B52 /* ImageExtension.swift in Sources */,
 				81422F6F21061DEC00282423 /* AppDelegate.swift in Sources */,

@@ -11,6 +11,7 @@ import Firebase
 
 class NewMessageController: UITableViewController {
 
+    var messagesController: MessagesController?
     var users = [User] () {
         didSet {
             DispatchQueue.main.async {
@@ -39,6 +40,7 @@ class NewMessageController: UITableViewController {
             print(dataSnapshot)
             if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                 let user = User(dictionary: dictionary)
+                user.id = dataSnapshot.key
                 self.users.append(user)
                 print(self.users)
             }
@@ -58,6 +60,14 @@ class NewMessageController: UITableViewController {
         cell.emailLabel?.text = user.email
         cell.profileImageView?.loadImage(urlString: user.imageurl ?? "")
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
+        dismiss(animated: true) {
+            let user = self.users[indexPath.row]
+            self.messagesController?.showMessageLogControllerWithUser(user: user)
+        }
     }
 
 }

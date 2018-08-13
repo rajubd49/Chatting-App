@@ -9,12 +9,14 @@
 import UIKit
 
 class User: NSObject {
+    var id: String?
     var name: String?
     var email: String?
     var imageurl: String?
 
     init(dictionary: [String: AnyObject]) {
         super.init()
+        id = dictionary["id"] as? String
         name = dictionary["name"] as? String
         email = dictionary["email"] as? String
         imageurl = dictionary["imageurl"] as? String

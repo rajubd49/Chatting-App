@@ -250,7 +250,7 @@
         <!--Message Log-->
         <scene sceneID="sLW-X9-IHq">
             <objects>
-                <viewController title="Message Log" id="a82-3M-JyJ" customClass="MessageLogController" customModule="Chatting_App" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MessageLogController" title="Message Log" id="a82-3M-JyJ" customClass="MessageLogController" customModule="Chatting_App" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ig8-1y-KZN">
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>

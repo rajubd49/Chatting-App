@@ -14,6 +14,11 @@ class MessageLogController: UIViewController,UITextFieldDelegate {
     @IBOutlet weak var messageTextField: UITextField!
     @IBOutlet weak var sendButton: UIButton!
     
+    var user:User? {
+        didSet {
+            navigationItem.title = user?.name
+        }
+    }
     override func viewDidLoad() {
         super.viewDidLoad()
         messageTextField.delegate = self
@@ -30,13 +35,17 @@ class MessageLogController: UIViewController,UITextFieldDelegate {
     @IBAction func sendAction(_ sender: Any) {
         let databaseReference = Database.database().reference().child("messages")
         let childReference = databaseReference.childByAutoId()
-        let values = ["text": messageTextField.text!]
-        childReference.updateChildValues(values)
-        messageTextField.text = nil
+        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid, let message = messageTextField.text {
+            let timestamp = NSNumber(value: Date().timeIntervalSinceNow)
+            let date = Date(timeIntervalSince1970: TimeInterval(truncating: timestamp))
+            let values = ["text": message, "toId": toId,"fromId": fromId,"timestamp": timestamp] as [String : Any]
+            childReference.updateChildValues(values)
+            messageTextField.text = nil
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        sendAction(UIButton.self)
+        sendAction(sendButton)
         return true
     }
     

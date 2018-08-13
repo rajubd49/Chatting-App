@@ -23,6 +23,14 @@ class MessagesController: UITableViewController {
         }
     }
     
+    var messages = [Message] () {
+        didSet {
+            DispatchQueue.main.async {
+                self.tableView.reloadData()
+            }
+        }
+    }
+    
     lazy var signout: UIBarButtonItem = {
         UIBarButtonItem.init(barButtonSystemItem: .action, target: self, action: #selector(self.signoutAction))
     }()
@@ -36,14 +44,24 @@ class MessagesController: UITableViewController {
 
         navigationItem.leftBarButtonItem = signout
         navigationItem.rightBarButtonItem = newMessage
-        navView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.navViewAction)))
-
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         chekedLoginStatusWithFetchUser()
+        observeMessages()
+    }
+    
+    fileprivate func observeMessages() {
+        self.messages.removeAll()
+        let databaseReference = Database.database().reference().child("messages")
+        databaseReference.observe(.childAdded, with: { (dataSnapshot) in
+            if let dictionary = dataSnapshot.value as? [String: AnyObject] {
+                let message = Message(dictionary: dictionary)
+                self.messages.append(message)
+            }
+        }, withCancel: nil)
     }
     
     fileprivate func chekedLoginStatusWithFetchUser() {
@@ -81,26 +99,32 @@ class MessagesController: UITableViewController {
     
     @objc private func newMessageAction() {
         if let newMessageNavController =  storyboard?.instantiateViewController(withIdentifier: "NewMessageNavController") {
+            if let newMessageController = newMessageNavController.childViewControllers.first as? NewMessageController {
+                newMessageController.messagesController = self
+            }
             present(newMessageNavController, animated: true, completion: nil)
         }
     }
     
-    @IBAction func navViewAction(_ sender: Any) {
-        performSegue(withIdentifier: "MessageLogSegueID", sender: self)
+    func showMessageLogControllerWithUser(user:User) {
+        if let messageLogController = storyboard?.instantiateViewController(withIdentifier:"MessageLogController") as? MessageLogController {
+            messageLogController.user = user
+            navigationController?.pushViewController(messageLogController, animated: true)
+        }
     }
     
     // MARK: - Table view data source
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.users.count
+        return self.messages.count
     }
 
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
-        let user = self.users[indexPath.row]
-        cell.nameLabel?.text = user.name
-        cell.emailLabel?.text = user.email
-        cell.profileImageView?.loadImage(urlString: user.imageurl ?? "")
+        let message = self.messages[indexPath.row]
+        cell.nameLabel?.text = message.text
+//        cell.emailLabel?.text = user.email
+//        cell.profileImageView?.loadImage(urlString: user.imageurl ?? "")
         return cell
     }
 
