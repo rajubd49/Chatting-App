@@ -66,12 +66,10 @@ class MessagesController: UITableViewController {
     }
     
     fileprivate func observeMessages() {
-        self.messages.removeAll()
         let databaseReference = Database.database().reference().child("messages")
         databaseReference.observe(.childAdded, with: { (dataSnapshot) in
             if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                 let message = Message(dictionary: dictionary)
-//                self.messages.append(message)
                 if let toId = message.toId {
                     self.messageDictionary[toId] = message
                     self.messages = Array(self.messageDictionary.values)

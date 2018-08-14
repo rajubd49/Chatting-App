@@ -26,10 +26,10 @@ class UserCell: UITableViewCell {
             }
             emailLabel?.text = message?.text
             if let timestamp = message?.timestamp?.doubleValue {
-                let date = Date(timeIntervalSinceNow: timestamp)
+                let date = Date(timeIntervalSince1970:timestamp)
                 let dateFormatter = DateFormatter()
                 dateFormatter.dateFormat = "hh:mm:ss a"
-                dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+                dateFormatter.timeZone = TimeZone(abbreviation: "UTC+6")
                 timestampLabel?.text = dateFormatter.string(from: date)
             }
         }

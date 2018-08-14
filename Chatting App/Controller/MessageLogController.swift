@@ -36,7 +36,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate {
         let databaseReference = Database.database().reference().child("messages")
         let childReference = databaseReference.childByAutoId()
         if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid, let message = messageTextField.text {
-            let timestamp = NSNumber(value: Date().timeIntervalSinceNow)
+            let timestamp = NSNumber(value: Date().timeIntervalSince1970)
             let values = ["text": message, "toId": toId,"fromId": fromId,"timestamp": timestamp] as [String : Any]
             childReference.updateChildValues(values)
             messageTextField.text = nil
