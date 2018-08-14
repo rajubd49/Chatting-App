@@ -41,8 +41,9 @@ class NewMessageController: UITableViewController {
             if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                 let user = User(dictionary: dictionary)
                 user.id = dataSnapshot.key
-                self.users.append(user)
-                print(self.users)
+                if user.id !=  Auth.auth().currentUser?.uid {
+                    self.users.append(user)
+                }
             }
         }, withCancel: nil)
     }

@@ -13,8 +13,14 @@ class UserCell: UITableViewCell {
 
     var message: Message? {
         didSet {
-            if let toId = message?.toId {
-                let databaseReference = Database.database().reference().child("users").child(toId)
+            let chatPartnerId: String?
+            if message?.fromId == Auth.auth().currentUser?.uid {
+                chatPartnerId = message?.toId
+            } else {
+                chatPartnerId = message?.fromId
+            }
+            if let id = chatPartnerId {
+                let databaseReference = Database.database().reference().child("users").child(id)
                 databaseReference.observeSingleEvent(of: .value, with: { (dataSnapshot) in
                     if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                         self.nameLabel?.text = dictionary["name"] as? String

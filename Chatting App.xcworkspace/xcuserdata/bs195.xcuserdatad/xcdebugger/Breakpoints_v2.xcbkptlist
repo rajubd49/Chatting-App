@@ -20,11 +20,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Chatting App/View/UserCell.swift"
-            timestampString = "555941938.9677581"
+            timestampString = "555948106.324295"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "29"
-            endingLineNumber = "29"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
             landmarkName = "message"
             landmarkType = "24">
          </BreakpointContent>

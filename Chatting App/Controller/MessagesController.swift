@@ -42,7 +42,7 @@ class MessagesController: UITableViewController {
         super.viewWillAppear(animated)
         
         chekedLoginStatusWithFetchUser()
-        observeMessages()
+        observeUserMessages()
     }
     
     fileprivate func chekedLoginStatusWithFetchUser() {
@@ -51,7 +51,6 @@ class MessagesController: UITableViewController {
         } else {
             if let uid = Auth.auth().currentUser?.uid {
                 Database.database().reference().child("users").child(uid).observeSingleEvent(of: .value, with: { (dataSnapshot) in
-                    print(dataSnapshot)
                     if let dictionary = dataSnapshot.value as? [String: AnyObject] {
                         let user = User(dictionary: dictionary)
                         self.navTitleLabel.text = user.name
@@ -65,19 +64,29 @@ class MessagesController: UITableViewController {
         
     }
     
-    fileprivate func observeMessages() {
-        let databaseReference = Database.database().reference().child("messages")
+    fileprivate func observeUserMessages() {
+        messages.removeAll()
+        messageDictionary.removeAll()
+        tableView.reloadData()
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+        let databaseReference = Database.database().reference().child("user_messages").child(uid)
         databaseReference.observe(.childAdded, with: { (dataSnapshot) in
-            if let dictionary = dataSnapshot.value as? [String: AnyObject] {
-                let message = Message(dictionary: dictionary)
-                if let toId = message.toId {
-                    self.messageDictionary[toId] = message
-                    self.messages = Array(self.messageDictionary.values)
-                    self.messages.sort(by: { (message1, message2) -> Bool in
-                        return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
-                    })
+            let messageId = dataSnapshot.key
+            let messagesReference = Database.database().reference().child("messages").child(messageId)
+            messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
+                if let dictionary = snapshot.value as? [String: AnyObject] {
+                    let message = Message(dictionary: dictionary)
+                    if let toId = message.toId {
+                        self.messageDictionary[toId] = message
+                        self.messages = Array(self.messageDictionary.values)
+                        self.messages.sort(by: { (message1, message2) -> Bool in
+                            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+                        })
+                    }
                 }
-            }
+            }, withCancel: nil)
         }, withCancel: nil)
     }
 
