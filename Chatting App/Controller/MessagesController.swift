@@ -15,14 +15,6 @@ class MessagesController: UITableViewController {
     @IBOutlet weak var navImageView: UIImageView!
     @IBOutlet weak var navTitleLabel: UILabel!
     
-    var users = [User] () {
-        didSet {
-            DispatchQueue.main.async {
-                self.tableView.reloadData()
-            }
-        }
-    }
-    
     var messages = [Message] () {
         didSet {
             DispatchQueue.main.async {
@@ -30,7 +22,7 @@ class MessagesController: UITableViewController {
             }
         }
     }
-    
+    var messageDictionary = [String:Message]()
     lazy var signout: UIBarButtonItem = {
         UIBarButtonItem.init(barButtonSystemItem: .action, target: self, action: #selector(self.signoutAction))
     }()
@@ -53,17 +45,6 @@ class MessagesController: UITableViewController {
         observeMessages()
     }
     
-    fileprivate func observeMessages() {
-        self.messages.removeAll()
-        let databaseReference = Database.database().reference().child("messages")
-        databaseReference.observe(.childAdded, with: { (dataSnapshot) in
-            if let dictionary = dataSnapshot.value as? [String: AnyObject] {
-                let message = Message(dictionary: dictionary)
-                self.messages.append(message)
-            }
-        }, withCancel: nil)
-    }
-    
     fileprivate func chekedLoginStatusWithFetchUser() {
         if Auth.auth().currentUser?.uid == nil {
             perform(#selector(signoutAction), with: self, afterDelay: 0)
@@ -82,6 +63,24 @@ class MessagesController: UITableViewController {
             }
         }
         
+    }
+    
+    fileprivate func observeMessages() {
+        self.messages.removeAll()
+        let databaseReference = Database.database().reference().child("messages")
+        databaseReference.observe(.childAdded, with: { (dataSnapshot) in
+            if let dictionary = dataSnapshot.value as? [String: AnyObject] {
+                let message = Message(dictionary: dictionary)
+//                self.messages.append(message)
+                if let toId = message.toId {
+                    self.messageDictionary[toId] = message
+                    self.messages = Array(self.messageDictionary.values)
+                    self.messages.sort(by: { (message1, message2) -> Bool in
+                        return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+                    })
+                }
+            }
+        }, withCancel: nil)
     }
 
     @objc private func signoutAction() {
@@ -122,9 +121,7 @@ class MessagesController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath) as! UserCell
         let message = self.messages[indexPath.row]
-        cell.nameLabel?.text = message.text
-//        cell.emailLabel?.text = user.email
-//        cell.profileImageView?.loadImage(urlString: user.imageurl ?? "")
+        cell.message = message
         return cell
     }
 

@@ -7,12 +7,38 @@
 //
 
 import UIKit
+import Firebase
 
 class UserCell: UITableViewCell {
 
+    var message: Message? {
+        didSet {
+            if let toId = message?.toId {
+                let databaseReference = Database.database().reference().child("users").child(toId)
+                databaseReference.observeSingleEvent(of: .value, with: { (dataSnapshot) in
+                    if let dictionary = dataSnapshot.value as? [String: AnyObject] {
+                        self.nameLabel?.text = dictionary["name"] as? String
+                        if let imageUrl = dictionary["imageurl"] as? String {
+                            self.profileImageView?.loadImage(urlString: imageUrl)
+                        }
+                    }
+                }, withCancel: nil)
+            }
+            emailLabel?.text = message?.text
+            if let timestamp = message?.timestamp?.doubleValue {
+                let date = Date(timeIntervalSinceNow: timestamp)
+                let dateFormatter = DateFormatter()
+                dateFormatter.dateFormat = "hh:mm:ss a"
+                dateFormatter.timeZone = TimeZone(abbreviation: "UTC")
+                timestampLabel?.text = dateFormatter.string(from: date)
+            }
+        }
+    }
+    
     @IBOutlet weak var profileImageView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var emailLabel: UILabel!
+    @IBOutlet weak var timestampLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

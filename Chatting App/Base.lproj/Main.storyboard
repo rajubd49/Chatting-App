@@ -158,7 +158,7 @@
                                             </userDefinedRuntimeAttributes>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vrT-bX-Y6l">
-                                            <rect key="frame" x="82" y="8.5" width="251" height="21"/>
+                                            <rect key="frame" x="82" y="8.5" width="189.5" height="21"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
@@ -169,24 +169,33 @@
                                             <nil key="textColor"/>
                                             <nil key="highlightedColor"/>
                                         </label>
+                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" text="HH:MM:SS" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FLU-fG-QS7">
+                                            <rect key="frame" x="279.5" y="12" width="61.5" height="14.5"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
                                     </subviews>
                                     <constraints>
                                         <constraint firstItem="qmG-Va-Rw6" firstAttribute="top" secondItem="OTb-tS-5lc" secondAttribute="top" constant="8" id="802-ar-C9V"/>
                                         <constraint firstItem="vrT-bX-Y6l" firstAttribute="top" secondItem="OTb-tS-5lc" secondAttribute="top" constant="8" id="BAd-5F-vCF"/>
                                         <constraint firstItem="3of-cw-B6y" firstAttribute="leading" secondItem="qmG-Va-Rw6" secondAttribute="trailing" constant="16" id="BJ5-KU-QiD"/>
                                         <constraint firstItem="vrT-bX-Y6l" firstAttribute="leading" secondItem="qmG-Va-Rw6" secondAttribute="trailing" constant="16" id="RlE-52-hX3"/>
+                                        <constraint firstAttribute="trailing" secondItem="FLU-fG-QS7" secondAttribute="trailing" id="W87-Hh-EWR"/>
+                                        <constraint firstItem="FLU-fG-QS7" firstAttribute="leading" secondItem="vrT-bX-Y6l" secondAttribute="trailing" constant="8" id="YDv-BU-XeX"/>
                                         <constraint firstItem="3of-cw-B6y" firstAttribute="top" secondItem="vrT-bX-Y6l" secondAttribute="bottom" constant="4" id="bRt-3T-VfD"/>
                                         <constraint firstAttribute="bottom" secondItem="qmG-Va-Rw6" secondAttribute="bottom" constant="8" id="cl7-Ut-5qq"/>
-                                        <constraint firstAttribute="trailing" secondItem="vrT-bX-Y6l" secondAttribute="trailing" constant="8" id="eY3-9R-1Ej"/>
                                         <constraint firstAttribute="bottom" secondItem="3of-cw-B6y" secondAttribute="bottom" id="iTY-Ua-8r5"/>
                                         <constraint firstItem="qmG-Va-Rw6" firstAttribute="leading" secondItem="OTb-tS-5lc" secondAttribute="leading" constant="16" id="keo-Pi-Caz"/>
                                         <constraint firstAttribute="trailing" secondItem="3of-cw-B6y" secondAttribute="trailing" constant="8" id="wTT-7h-PEt"/>
+                                        <constraint firstItem="FLU-fG-QS7" firstAttribute="centerY" secondItem="vrT-bX-Y6l" secondAttribute="centerY" id="zjd-op-bSz"/>
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
                                     <outlet property="emailLabel" destination="3of-cw-B6y" id="BWe-xS-UmW"/>
                                     <outlet property="nameLabel" destination="vrT-bX-Y6l" id="lqg-z1-enK"/>
                                     <outlet property="profileImageView" destination="qmG-Va-Rw6" id="99A-tl-j7a"/>
+                                    <outlet property="timestampLabel" destination="FLU-fG-QS7" id="hEl-48-Grq"/>
                                 </connections>
                             </tableViewCell>
                         </prototypes>
