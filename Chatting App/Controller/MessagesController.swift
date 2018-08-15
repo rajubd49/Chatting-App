@@ -131,5 +131,19 @@ class MessagesController: UITableViewController {
         cell.message = message
         return cell
     }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let message = messages[indexPath.row]
+        if let chatPartnerId = message.chatPartnerId() {
+        Database.database().reference().child("users").child(chatPartnerId).observeSingleEvent(of: .value, with: { (dataSnapshot) in
+                if let dictionary = dataSnapshot.value as? [String: AnyObject] {
+                    let user = User(dictionary: dictionary)
+                    user.id = chatPartnerId
+                    self.showMessageLogControllerWithUser(user: user)
+                }
+            }, withCancel: nil)
+        }
+        print(message)
+    }
 
 }
