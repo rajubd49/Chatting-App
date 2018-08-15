@@ -20,6 +20,7 @@
 		8194E9EF2121C5360038FE7D /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8194E9EE2121C5360038FE7D /* Message.swift */; };
 		81E0938C210B3CF100B38B52 /* ImageExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0938B210B3CF100B38B52 /* ImageExtension.swift */; };
 		81E0938E210B41E700B38B52 /* UserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81E0938D210B41E700B38B52 /* UserCell.swift */; };
+		81FAABBC2124687C000F2E87 /* MessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81FAABBB2124687C000F2E87 /* MessageCell.swift */; };
 		BFF73F7B60D0E15657D0F0E8 /* Pods_Chatting_App.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */; };
 /* End PBXBuildFile section */
 
@@ -41,6 +42,7 @@
 		8194E9EE2121C5360038FE7D /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		81E0938B210B3CF100B38B52 /* ImageExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageExtension.swift; sourceTree = "<group>"; };
 		81E0938D210B41E700B38B52 /* UserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserCell.swift; sourceTree = "<group>"; };
+		81FAABBB2124687C000F2E87 /* MessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCell.swift; sourceTree = "<group>"; };
 		D596BF0C055FFA6292498B4E /* Pods_Chatting_App.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Chatting_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -121,6 +123,7 @@
 			isa = PBXGroup;
 			children = (
 				81E0938D210B41E700B38B52 /* UserCell.swift */,
+				81FAABBB2124687C000F2E87 /* MessageCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -264,6 +267,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				81587E9121188A5D00703E33 /* MessageLogController.swift in Sources */,
+				81FAABBC2124687C000F2E87 /* MessageCell.swift in Sources */,
 				81E0938E210B41E700B38B52 /* UserCell.swift in Sources */,
 				815AF1A721075666001A2E0B /* NewMessageController.swift in Sources */,
 				8194E9EF2121C5360038FE7D /* Message.swift in Sources */,

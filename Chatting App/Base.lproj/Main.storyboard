@@ -274,15 +274,20 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="uNq-hg-zq8">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="MessageCell" id="uNq-hg-zq8" customClass="MessageCell" customModule="Chatting_App" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO">
                                             <rect key="frame" x="0.0" y="0.0" width="50" height="50"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                         </view>
+                                        <size key="customSize" width="50" height="50"/>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="a82-3M-JyJ" id="qZe-5W-NcC"/>
+                                    <outlet property="delegate" destination="a82-3M-JyJ" id="BSx-ZH-TBG"/>
+                                </connections>
                             </collectionView>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wll-gn-2QU">
                                 <rect key="frame" x="0.0" y="623" width="375" height="44"/>
@@ -332,6 +337,7 @@
                         <viewLayoutGuide key="safeArea" id="qZ9-z6-zJF"/>
                     </view>
                     <connections>
+                        <outlet property="collectionView" destination="Qtx-8Q-mb9" id="myo-nD-wX5"/>
                         <outlet property="messageTextField" destination="GzV-yq-xVM" id="STf-Sh-0gF"/>
                         <outlet property="sendButton" destination="JWv-1O-W3U" id="esv-40-dWf"/>
                     </connections>

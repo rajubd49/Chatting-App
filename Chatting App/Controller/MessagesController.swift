@@ -143,7 +143,6 @@ class MessagesController: UITableViewController {
                 }
             }, withCancel: nil)
         }
-        print(message)
     }
 
 }
