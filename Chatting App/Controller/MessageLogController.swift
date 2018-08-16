@@ -39,6 +39,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: "MessageCell")
         collectionView.alwaysBounceVertical = true
+        collectionView.contentInset = UIEdgeInsetsMake(8, 0, 8, 0)
     }
 
     override func didReceiveMemoryWarning() {
@@ -63,6 +64,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
                 recipientMessageRef.updateChildValues([messageId:1])
             }
             messageTextField.text = nil
+            scrollToBottomForMessages()
         }
     }
     
@@ -107,7 +109,8 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MessageCell", for: indexPath) as! MessageCell
         let message = messages[indexPath.item]
-        cell.textView.text = message.text
+        cell.messageTextView.text = message.text
+        cell.messageBubbleWidthAnchor?.constant = getEstimatedFrameForText(text: message.text ?? "").width + 24 //Padding 24
         return cell
     }
     
@@ -116,6 +119,22 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView,
                                  layout collectionViewLayout: UICollectionViewLayout,
                                  sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: view.bounds.size.width, height: 60)
+        
+        var height:CGFloat = 80
+        if let text = messages[indexPath.item].text {
+            height = getEstimatedFrameForText(text: text).height + 16 //Padding 16
+        }
+        return CGSize(width: view.bounds.size.width, height: height)
+    }
+    
+    private func getEstimatedFrameForText(text: String) -> CGRect {
+        let size = CGSize(width: 200, height: 1000) //Your view's width and height value
+        let options = NSStringDrawingOptions.usesFontLeading.union(.usesLineFragmentOrigin)
+        return NSString(string: text).boundingRect(with: size, options: options, attributes: [kCTFontAttributeName as NSAttributedStringKey : UIFont.systemFont(ofSize: 15)], context: nil)
+    }
+    
+    private func scrollToBottomForMessages() {
+        let lastMessageIndex = collectionView.numberOfItems(inSection: 0) - 1
+        collectionView.scrollToItem(at: IndexPath(item: lastMessageIndex, section: 0), at: .bottom, animated: true)
     }
 }

@@ -78,8 +78,8 @@ class MessagesController: UITableViewController {
             messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
                 if let dictionary = snapshot.value as? [String: AnyObject] {
                     let message = Message(dictionary: dictionary)
-                    if let toId = message.toId {
-                        self.messageDictionary[toId] = message
+                    if let chatPartnerId = message.chatPartnerId() {
+                        self.messageDictionary[chatPartnerId] = message
                         self.messages = Array(self.messageDictionary.values)
                         self.messages.sort(by: { (message1, message2) -> Bool in
                             return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
