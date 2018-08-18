@@ -10,11 +10,13 @@ import UIKit
 
 class MessageCell: UICollectionViewCell {
     
+    static let lightBlueColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
+    static let lightGrayColor = #colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1)
+    
     let messageTextView: UITextView = {
         let textView = UITextView()
-        textView.text = "Dummy text"
-        textView.textColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         textView.isScrollEnabled = false
+        textView.isEditable = false
         textView.font = UIFont.systemFont(ofSize: 15)
         textView.backgroundColor = .clear
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -23,24 +25,45 @@ class MessageCell: UICollectionViewCell {
     
     let messageBubbleView: UIView = {
        let view = UIView()
-        view.backgroundColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
         view.layer.cornerRadius = 16
         view.layer.masksToBounds = true
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
+    let profileImageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(named: "chat")
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 16
+        imageView.layer.masksToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
     var messageBubbleWidthAnchor: NSLayoutConstraint?
+    var messageBubbleLeftAnchor: NSLayoutConstraint?
+    var messageBubbleRightAnchor: NSLayoutConstraint?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         
+        addSubview(profileImageView)
         addSubview(messageBubbleView)
         addSubview(messageTextView)
         
+        //ImageView Constrain
+        profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
+        profileImageView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 2).isActive = true
+        profileImageView.widthAnchor.constraint(equalToConstant: 32.0).isActive = true
+        profileImageView.heightAnchor.constraint(equalToConstant: 32.0).isActive = true
+        
         //BubbleView Constraint
         messageBubbleView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        messageBubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8).isActive = true
+        messageBubbleLeftAnchor = messageBubbleView.leftAnchor.constraint(equalTo: profileImageView.rightAnchor, constant: 8)
+        messageBubbleLeftAnchor?.isActive = true
+        messageBubbleRightAnchor = messageBubbleView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -8)
+        messageBubbleRightAnchor?.isActive = true
         messageBubbleView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         messageBubbleWidthAnchor = messageBubbleView.widthAnchor.constraint(equalToConstant: 200.0)
         messageBubbleWidthAnchor?.isActive = true

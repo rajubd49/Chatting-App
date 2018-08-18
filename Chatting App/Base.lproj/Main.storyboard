@@ -265,7 +265,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Qtx-8Q-mb9">
-                                <rect key="frame" x="0.0" y="64" width="375" height="559"/>
+                                <rect key="frame" x="0.0" y="64" width="375" height="553"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="CAD-Ey-DgH">
                                     <size key="itemSize" width="50" height="50"/>
@@ -289,57 +289,18 @@
                                     <outlet property="delegate" destination="a82-3M-JyJ" id="BSx-ZH-TBG"/>
                                 </connections>
                             </collectionView>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="wll-gn-2QU">
-                                <rect key="frame" x="0.0" y="623" width="375" height="44"/>
-                                <subviews>
-                                    <textField opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Type your messages..." textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="GzV-yq-xVM">
-                                        <rect key="frame" x="0.0" y="1" width="325" height="43"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <nil key="textColor"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                        <textInputTraits key="textInputTraits"/>
-                                    </textField>
-                                    <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JWv-1O-W3U">
-                                        <rect key="frame" x="325" y="1" width="50" height="43"/>
-                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" constant="50" id="6yP-h3-8Sx"/>
-                                        </constraints>
-                                        <state key="normal" title="Send"/>
-                                        <connections>
-                                            <action selector="sendAction:" destination="a82-3M-JyJ" eventType="touchUpInside" id="fb1-Xs-ibe"/>
-                                        </connections>
-                                    </button>
-                                </subviews>
-                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                                <constraints>
-                                    <constraint firstItem="GzV-yq-xVM" firstAttribute="leading" secondItem="wll-gn-2QU" secondAttribute="leading" id="0qc-Ut-vV1"/>
-                                    <constraint firstAttribute="height" constant="44" id="1Pe-r9-BWK"/>
-                                    <constraint firstAttribute="trailing" secondItem="JWv-1O-W3U" secondAttribute="trailing" id="3D1-bf-Fq7"/>
-                                    <constraint firstAttribute="bottom" secondItem="JWv-1O-W3U" secondAttribute="bottom" id="Nec-uo-4Jc"/>
-                                    <constraint firstItem="GzV-yq-xVM" firstAttribute="top" secondItem="wll-gn-2QU" secondAttribute="top" constant="1" id="Waw-Ix-cui"/>
-                                    <constraint firstItem="JWv-1O-W3U" firstAttribute="top" secondItem="wll-gn-2QU" secondAttribute="top" constant="1" id="a9e-k4-fqS"/>
-                                    <constraint firstItem="JWv-1O-W3U" firstAttribute="leading" secondItem="GzV-yq-xVM" secondAttribute="trailing" id="d8A-eQ-aC8"/>
-                                    <constraint firstAttribute="bottom" secondItem="GzV-yq-xVM" secondAttribute="bottom" id="f3k-vo-PSb"/>
-                                </constraints>
-                            </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="wll-gn-2QU" firstAttribute="leading" secondItem="qZ9-z6-zJF" secondAttribute="leading" id="B7J-Z6-z0N"/>
                             <constraint firstItem="Qtx-8Q-mb9" firstAttribute="leading" secondItem="qZ9-z6-zJF" secondAttribute="leading" id="Dk7-UN-RFv"/>
                             <constraint firstItem="Qtx-8Q-mb9" firstAttribute="top" secondItem="qZ9-z6-zJF" secondAttribute="top" id="Lg4-EH-bob"/>
-                            <constraint firstItem="wll-gn-2QU" firstAttribute="top" secondItem="Qtx-8Q-mb9" secondAttribute="bottom" id="Ss9-SB-Y93"/>
-                            <constraint firstItem="wll-gn-2QU" firstAttribute="bottom" secondItem="qZ9-z6-zJF" secondAttribute="bottom" id="W8f-1x-mNJ"/>
+                            <constraint firstItem="qZ9-z6-zJF" firstAttribute="bottom" secondItem="Qtx-8Q-mb9" secondAttribute="bottom" constant="50" id="SxQ-Br-WTZ"/>
                             <constraint firstItem="qZ9-z6-zJF" firstAttribute="trailing" secondItem="Qtx-8Q-mb9" secondAttribute="trailing" id="tFO-t6-W5y"/>
-                            <constraint firstItem="qZ9-z6-zJF" firstAttribute="trailing" secondItem="wll-gn-2QU" secondAttribute="trailing" id="zs5-Ew-eeZ"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="qZ9-z6-zJF"/>
                     </view>
                     <connections>
                         <outlet property="collectionView" destination="Qtx-8Q-mb9" id="myo-nD-wX5"/>
-                        <outlet property="messageTextField" destination="GzV-yq-xVM" id="STf-Sh-0gF"/>
-                        <outlet property="sendButton" destination="JWv-1O-W3U" id="esv-40-dWf"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="m82-Cl-mlq" userLabel="First Responder" sceneMemberID="firstResponder"/>

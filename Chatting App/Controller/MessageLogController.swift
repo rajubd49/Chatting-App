@@ -12,8 +12,6 @@ import Firebase
 class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
-    @IBOutlet weak var messageTextField: UITextField!
-    @IBOutlet weak var sendButton: UIButton!
     
     var user:User? {
         didSet {
@@ -30,56 +28,81 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         }
     }
     
+    // MARK: - View Controller Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
         messageTextField.delegate = self
-        let paddingView = UIView(frame: CGRect(x: 0, y: 0, width: 12, height: messageTextField.frame.height))
-        messageTextField.leftView = paddingView
-        messageTextField.leftViewMode = .always
-        
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: "MessageCell")
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsetsMake(8, 0, 8, 0)
+        collectionView.keyboardDismissMode = .interactive
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
-
-    @IBAction func sendAction(_ sender: Any) {
-        let databaseReference = Database.database().reference().child("messages")
-        let childReference = databaseReference.childByAutoId()
-        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid, let message = messageTextField.text {
-            let timestamp = NSNumber(value: Date().timeIntervalSince1970)
-            let values = ["text": message, "toId": toId,"fromId": fromId,"timestamp": timestamp] as [String : Any]
-            childReference.updateChildValues(values) { (error, dbRef) in
-                if error != nil {
-                    print(error?.localizedDescription as Any)
-                    return
-                }
-                let senderMessageRef = Database.database().reference().child("user_messages").child(fromId)
-                let messageId = childReference.key
-                senderMessageRef.updateChildValues([messageId:1])
-                let recipientMessageRef = Database.database().reference().child("user_messages").child(toId)
-                recipientMessageRef.updateChildValues([messageId:1])
-            }
-            messageTextField.text = nil
-            scrollToBottomForMessages()
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        collectionView.collectionViewLayout.invalidateLayout()
+    }
+    
+    // MARK: - Input Accessory View
+    override var inputAccessoryView: UIView? {
+        get {
+            return inputContainerView
         }
     }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        sendAction(sendButton)
+
+    override var canBecomeFirstResponder: Bool {
         return true
     }
     
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard let text = textField.text else { return true }
-        let maxLength = text.utf16.count + string.utf16.count - range.length
-        sendButton.isEnabled = maxLength > 0
-        return true
-    }
+    // MARK: - Prepare Input Container View
+    lazy var inputContainerView: UIView = {
+        let containerView = UIView()
+        containerView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
+        containerView.frame = CGRect(x: 0, y: 0, width:self.view.frame.width, height: 50)
+        
+        //UIButton "Send"
+        containerView.addSubview(sendButton)
+        sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
+        sendButton.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
+        sendButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
+        
+        //UITextField "Message Input"
+        containerView.addSubview(messageTextField)
+        messageTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        messageTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
+        messageTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
+        messageTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        
+        //UIView "Separator"
+        let separatorView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 1))
+        separatorView.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+        containerView.addSubview(separatorView)
+        return containerView
+    }()
     
+    let messageTextField: UITextField = {
+        let textField = UITextField()
+        textField.font = UIFont.systemFont(ofSize: 15)
+        textField.placeholder = "Type your messages..."
+        textField.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        textField.translatesAutoresizingMaskIntoConstraints = false
+        return textField
+    }()
+    
+    let sendButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Send", for: .normal)
+        button.addTarget(self, action: #selector(sendAction), for: .touchUpInside)
+        button.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    // MARK: - Fetch Message Log
     fileprivate func observeUserMessages() {
         messages.removeAll()
         guard let uid = Auth.auth().currentUser?.uid else {
@@ -100,8 +123,44 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
             }, withCancel: nil)
         }, withCancel: nil)
     }
+
+    // MARK: - UIButton Action
+    @objc func sendAction() {
+        let databaseReference = Database.database().reference().child("messages")
+        let childReference = databaseReference.childByAutoId()
+        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid, let message = messageTextField.text {
+            let timestamp = NSNumber(value: Date().timeIntervalSince1970)
+            let values = ["text": message, "toId": toId,"fromId": fromId,"timestamp": timestamp] as [String : Any]
+            childReference.updateChildValues(values) { (error, dbRef) in
+                if error != nil {
+                    print(error?.localizedDescription as Any)
+                    return
+                }
+                let senderMessageRef = Database.database().reference().child("user_messages").child(fromId)
+                let messageId = childReference.key
+                senderMessageRef.updateChildValues([messageId:1])
+                let recipientMessageRef = Database.database().reference().child("user_messages").child(toId)
+                recipientMessageRef.updateChildValues([messageId:1])
+            }
+            messageTextField.text = nil
+            sendButton.isEnabled = false
+        }
+    }
     
-    // CollectionView Datasource
+    // MARK: - UITextField Delegate
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        sendAction()
+        return true
+    }
+    
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        guard let text = textField.text else { return true }
+        let maxLength = text.utf16.count + string.utf16.count - range.length
+        sendButton.isEnabled = maxLength > 0
+        return true
+    }
+    
+    // MARK: - CollectionView Datasource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return messages.count
     }
@@ -110,21 +169,45 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MessageCell", for: indexPath) as! MessageCell
         let message = messages[indexPath.item]
         cell.messageTextView.text = message.text
-        cell.messageBubbleWidthAnchor?.constant = getEstimatedFrameForText(text: message.text ?? "").width + 24 //Padding 24
+        setupCell(cell: cell, message: message)
+        cell.messageBubbleWidthAnchor?.constant = getEstimatedFrameForText(text: message.text ?? "").width + 24 //Padding
         return cell
     }
     
-    // CollectionView Delegate Flow Layout
-
+    // MARK: - CollectionView Delegate Flow Layout
     func collectionView(_ collectionView: UICollectionView,
                                  layout collectionViewLayout: UICollectionViewLayout,
                                  sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         var height:CGFloat = 80
         if let text = messages[indexPath.item].text {
-            height = getEstimatedFrameForText(text: text).height + 16 //Padding 16
+            height = getEstimatedFrameForText(text: text).height + 24 //Padding
         }
-        return CGSize(width: view.bounds.size.width, height: height)
+        return CGSize(width: getViewWidth(), height: height)
+    }
+    
+    // MARK: - Utils
+    private func setupCell(cell:MessageCell, message: Message) {
+        
+        if let imageUrl = user?.imageurl {
+            cell.profileImageView.loadImage(urlString: imageUrl)
+        }
+        
+        if message.fromId == Auth.auth().currentUser?.uid {
+            //Outgoing blue bubble message from login user
+            cell.messageBubbleView.backgroundColor = MessageCell.lightBlueColor
+            cell.messageTextView.textColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+            cell.messageBubbleRightAnchor?.isActive = true
+            cell.messageBubbleLeftAnchor?.isActive = false
+            cell.profileImageView.isHidden = true
+        } else {
+            //Incoming gray bubble message from selected user
+            cell.messageBubbleView.backgroundColor = MessageCell.lightGrayColor
+            cell.messageTextView.textColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+            cell.messageBubbleRightAnchor?.isActive = false
+            cell.messageBubbleLeftAnchor?.isActive = true
+            cell.profileImageView.isHidden = false
+        }
     }
     
     private func getEstimatedFrameForText(text: String) -> CGRect {
@@ -137,4 +220,9 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         let lastMessageIndex = collectionView.numberOfItems(inSection: 0) - 1
         collectionView.scrollToItem(at: IndexPath(item: lastMessageIndex, section: 0), at: .bottom, animated: true)
     }
+    
+    func getViewWidth() -> CGFloat {
+        return UIScreen.main.bounds.width
+    }
+    
 }
