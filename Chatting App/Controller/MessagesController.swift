@@ -73,20 +73,27 @@ class MessagesController: UITableViewController {
         }
         let databaseReference = Database.database().reference().child("user_messages").child(uid)
         databaseReference.observe(.childAdded, with: { (dataSnapshot) in
-            let messageId = dataSnapshot.key
-            let messagesReference = Database.database().reference().child("messages").child(messageId)
-            messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
-                if let dictionary = snapshot.value as? [String: AnyObject] {
-                    let message = Message(dictionary: dictionary)
-                    if let chatPartnerId = message.chatPartnerId() {
-                        self.messageDictionary[chatPartnerId] = message
-                        self.messages = Array(self.messageDictionary.values)
-                        self.messages.sort(by: { (message1, message2) -> Bool in
-                            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
-                        })
-                    }
-                }
+            let userId = dataSnapshot.key
+            Database.database().reference().child("user_messages").child(uid).child(userId).observe(.childAdded, with: { (snapshot) in
+                let messageId = snapshot.key
+                self.fetchMessagesWithMessageId(messageId: messageId)
             }, withCancel: nil)
+        }, withCancel: nil)
+    }
+    
+    fileprivate func fetchMessagesWithMessageId(messageId: String) {
+        let messagesReference = Database.database().reference().child("messages").child(messageId)
+        messagesReference.observeSingleEvent(of: .value, with: { (snapshot) in
+            if let dictionary = snapshot.value as? [String: AnyObject] {
+                let message = Message(dictionary: dictionary)
+                if let chatPartnerId = message.chatPartnerId() {
+                    self.messageDictionary[chatPartnerId] = message
+                    self.messages = Array(self.messageDictionary.values)
+                    self.messages.sort(by: { (message1, message2) -> Bool in
+                        return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+                    })
+                }
+            }
         }, withCancel: nil)
     }
 
