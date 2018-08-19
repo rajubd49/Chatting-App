@@ -13,6 +13,12 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
 
     @IBOutlet weak var collectionView: UICollectionView!
     
+    var selectedImage: UIImage? {
+        didSet{
+            uploadMessageImage(selectedImage: selectedImage)
+        }
+    }
+    
     var user:User? {
         didSet {
             navigationItem.title = user?.name
@@ -72,6 +78,13 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         containerView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         containerView.frame = CGRect(x: 0, y: 0, width:view.bounds.width, height: 50)
         
+        //UIImage "Send Image"
+        containerView.addSubview(uploadImageButton)
+        uploadImageButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        uploadImageButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        uploadImageButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        uploadImageButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        
         //UIButton "Send"
         sendButton.isEnabled = false
         containerView.addSubview(sendButton)
@@ -83,7 +96,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         //UITextField "Message Input"
         messageTextField.delegate = self
         containerView.addSubview(messageTextField)
-        messageTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        messageTextField.leftAnchor.constraint(equalTo: uploadImageButton.rightAnchor, constant: 8).isActive = true
         messageTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
         messageTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
         messageTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
@@ -100,6 +113,15 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         separatorView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
         
         return containerView
+    }()
+    
+    let uploadImageButton: UIButton = {
+        let button = UIButton()
+        button.setImage(#imageLiteral(resourceName: "uploadimage"), for: .normal)
+        button.addTarget(self, action: #selector(uploadImageButtonAction), for: .touchUpInside)
+        button.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
     }()
     
     let messageTextField: UITextField = {
@@ -159,7 +181,45 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
             }
             messageTextField.text = nil
             sendButton.isEnabled = false
-            scrollToBottomForMessages()
+        }
+    }
+    
+    private func uploadMessageImage(selectedImage:UIImage?) {
+        let imageName = UUID().uuidString
+        let storageReference = Storage.storage().reference().child("message_images").child("\(imageName).png")
+        if let image = selectedImage, let imageData = UIImageJPEGRepresentation(image, 0.1) {
+            storageReference.putData(imageData, metadata: nil, completion: { (storageMetadata, error) in
+                if error != nil { print(error!); return }
+                storageReference.downloadURL(completion: { (url, error) in
+                    if error != nil { print(error!); return }
+                    if let imageUrlString = url?.absoluteString {
+                        self.sendImage(imageUrl: imageUrlString)
+                    }
+                })
+            })
+        }
+    }
+    
+    private func sendImage(imageUrl: String) {
+        let databaseReference = Database.database().reference().child("messages")
+        let childReference = databaseReference.childByAutoId()
+        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid {
+            let timestamp = NSNumber(value: Date().timeIntervalSince1970)
+            let values = ["imageUrl": imageUrl,
+                          "toId": toId,
+                          "fromId": fromId,
+                          "timestamp": timestamp] as [String : Any]
+            childReference.updateChildValues(values) { (error, dbRef) in
+                if error != nil {
+                    print(error?.localizedDescription as Any)
+                    return
+                }
+                let senderMessageRef = Database.database().reference().child("user_messages").child(fromId).child(toId)
+                let messageId = childReference.key
+                senderMessageRef.updateChildValues([messageId:1])
+                let recipientMessageRef = Database.database().reference().child("user_messages").child(toId).child(fromId)
+                recipientMessageRef.updateChildValues([messageId:1])
+            }
         }
     }
     
@@ -184,7 +244,6 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MessageCell", for: indexPath) as! MessageCell
         let message = messages[indexPath.item]
-        cell.messageTextView.text = message.text
         setupCell(cell: cell, message: message)
         cell.messageBubbleWidthAnchor?.constant = getEstimatedFrameForText(text: message.text ?? "").width + 24 //Padding
         return cell
@@ -224,6 +283,19 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
             cell.messageBubbleLeftAnchor?.isActive = true
             cell.profileImageView.isHidden = false
         }
+        
+        if let messageText = message.text {
+            cell.messageTextView.text = messageText
+            cell.messageImageView.isHidden = true
+        } else {
+            guard let imageUrl = message.imageUrl else {
+                return
+            }
+            cell.messageImageView.loadImage(urlString: imageUrl)
+            cell.messageImageView.isHidden = false
+            cell.messageBubbleView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+        }
+
     }
     
     private func getEstimatedFrameForText(text: String) -> CGRect {
@@ -258,6 +330,32 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     @objc func keyboardWillHide(notification: NSNotification) {
         collectionView.contentInset = UIEdgeInsetsMake(8, 0, 58, 0)
         collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, 58, 0)
+    }
+    
+}
+
+extension MessageLogController:UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    @objc func uploadImageButtonAction() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.allowsEditing = true
+        present(imagePicker, animated: true, completion: nil)
+    }
+
+    // MARK: - UIImagePickerController Delegate
+
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+        if let editedImage = info["UIImagePickerControllerEditedImage"] {
+            selectedImage = editedImage as? UIImage
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] {
+            selectedImage = originalImage as? UIImage
+        }
+        dismiss(animated: true, completion: nil)
+    }
+
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
     }
     
 }

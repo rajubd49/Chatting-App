@@ -33,6 +33,6 @@ extension UIImageView {
     }
     
     func showUnavailableImage() {
-        self.image = UIImage(named: "chat")
+        self.image = #imageLiteral(resourceName: "chat")
     }
 }

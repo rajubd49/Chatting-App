@@ -14,6 +14,7 @@ class Message: NSObject {
     var toId: String?
     var fromId: String?
     var text: String?
+    var imageUrl: String?
     var timestamp: NSNumber?
     
     init(dictionary: [String: AnyObject]) {
@@ -21,6 +22,7 @@ class Message: NSObject {
         toId = dictionary["toId"] as? String
         fromId = dictionary["fromId"] as? String
         text = dictionary["text"] as? String
+        imageUrl = dictionary["imageUrl"] as? String
         timestamp = dictionary["timestamp"] as? NSNumber
     }
     

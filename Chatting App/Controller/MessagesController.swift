@@ -24,11 +24,11 @@ class MessagesController: UITableViewController {
     }
     var messageDictionary = [String:Message]()
     lazy var signout: UIBarButtonItem = {
-        UIBarButtonItem.init(barButtonSystemItem: .action, target: self, action: #selector(self.signoutAction))
+        UIBarButtonItem.init(image: #imageLiteral(resourceName: "logout"), style: .plain, target: self, action: #selector(self.signoutAction))
     }()
     
     lazy var newMessage: UIBarButtonItem = {
-        UIBarButtonItem.init(barButtonSystemItem: .add, target: self, action: #selector(self.newMessageAction))
+        UIBarButtonItem.init(image: #imageLiteral(resourceName: "newmessage"), style: .plain, target: self, action: #selector(self.newMessageAction))
     }()
     
     override func viewDidLoad() {

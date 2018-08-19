@@ -33,7 +33,16 @@ class MessageCell: UICollectionViewCell {
     
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(named: "chat")
+        imageView.image = #imageLiteral(resourceName: "chat")
+        imageView.contentMode = .scaleAspectFill
+        imageView.layer.cornerRadius = 16
+        imageView.layer.masksToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+    
+    let messageImageView: UIImageView = {
+        let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
@@ -51,6 +60,12 @@ class MessageCell: UICollectionViewCell {
         addSubview(profileImageView)
         addSubview(messageBubbleView)
         addSubview(messageTextView)
+        
+        messageBubbleView.addSubview(messageImageView)
+        messageImageView.leftAnchor.constraint(equalTo: messageBubbleView.leftAnchor).isActive = true
+        messageImageView.topAnchor.constraint(equalTo: messageBubbleView.topAnchor).isActive = true
+        messageImageView.widthAnchor.constraint(equalTo: messageBubbleView.widthAnchor).isActive = true
+        messageImageView.heightAnchor.constraint(equalTo: messageBubbleView.heightAnchor).isActive = true
         
         //ImageView Constrain
         profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true

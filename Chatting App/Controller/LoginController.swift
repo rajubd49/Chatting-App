@@ -81,7 +81,7 @@ class LoginController: UIViewController {
                                 if err != nil { print(err!); return }
                                 self.activityIndicator.stopAnimating()
                                 self.segmentControl.selectedSegmentIndex = 0
-                                self.imageView.image = UIImage(named: "chat")
+                                self.imageView.image = #imageLiteral(resourceName: "chat")
                                 self.imageView.isUserInteractionEnabled = false
                                 self.updateViewContentForSelectedSegment()
                             })
