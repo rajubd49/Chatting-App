@@ -31,11 +31,20 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     // MARK: - View Controller Life Cycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        messageTextField.delegate = self
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: "MessageCell")
         collectionView.alwaysBounceVertical = true
-        collectionView.contentInset = UIEdgeInsetsMake(8, 0, 8, 0)
+        collectionView.contentInset = UIEdgeInsetsMake(8, 0, 58, 0)
+        collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, 58, 0)
         collectionView.keyboardDismissMode = .interactive
+        
+        observeKeyboardNotifications()
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.removeObserver(self, name: .UIKeyboardWillHide, object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -61,9 +70,10 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     lazy var inputContainerView: UIView = {
         let containerView = UIView()
         containerView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
-        containerView.frame = CGRect(x: 0, y: 0, width:self.view.frame.width, height: 50)
+        containerView.frame = CGRect(x: 0, y: 0, width:view.bounds.width, height: 50)
         
         //UIButton "Send"
+        sendButton.isEnabled = false
         containerView.addSubview(sendButton)
         sendButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
         sendButton.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
@@ -71,6 +81,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         sendButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
         
         //UITextField "Message Input"
+        messageTextField.delegate = self
         containerView.addSubview(messageTextField)
         messageTextField.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
         messageTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
@@ -78,9 +89,16 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         messageTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
         
         //UIView "Separator"
-        let separatorView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 1))
+        let separatorView = UIView()
         separatorView.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
         containerView.addSubview(separatorView)
+        
+        separatorView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
+        separatorView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
+        separatorView.heightAnchor.constraint(equalToConstant: 1).isActive = true
+        separatorView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+        
         return containerView
     }()
     
@@ -141,6 +159,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
             }
             messageTextField.text = nil
             sendButton.isEnabled = false
+            scrollToBottomForMessages()
         }
     }
     
@@ -220,6 +239,25 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     
     func getViewWidth() -> CGFloat {
         return UIScreen.main.bounds.width
+    }
+    
+    // MARK: - UIKeyboardNotification
+    
+    func observeKeyboardNotifications() {
+        NotificationCenter.default.addObserver(self, selector: #selector(MessageLogController.keyboardWillShow), name: .UIKeyboardWillShow, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(MessageLogController.keyboardWillHide), name: .UIKeyboardWillHide, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            collectionView.contentInset = UIEdgeInsetsMake(8, 0, keyboardFrame.height + 8, 0)
+            collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, keyboardFrame.height + 8, 0)
+        }
+    }
+    
+    @objc func keyboardWillHide(notification: NSNotification) {
+        collectionView.contentInset = UIEdgeInsetsMake(8, 0, 58, 0)
+        collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, 58, 0)
     }
     
 }
