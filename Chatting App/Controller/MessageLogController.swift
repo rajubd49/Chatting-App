@@ -8,13 +8,18 @@
 
 import UIKit
 import Firebase
+import MobileCoreServices
+import AVFoundation
 
 class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    
     var tappedImageViewFrame: CGRect?
     var blackBackgroundView: UIView?
     var selectedImageView: UIImageView?
+    var player: AVPlayer?
+    var playerLayer: AVPlayerLayer?
     
     var user:User? {
         didSet {
@@ -34,7 +39,9 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     
     var selectedImage: UIImage? {
         didSet{
-            uploadMessageImage(selectedImage: selectedImage)
+            uploadMessageImage(selectedImage: selectedImage) { (imageUrl) in
+                self.sendImage(imageUrl: imageUrl, image:self.selectedImage!)
+            }
         }
     }
     
@@ -83,11 +90,11 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         containerView.frame = CGRect(x: 0, y: 0, width:view.bounds.width, height: 50)
         
         //UIButton "Send Image"
-        containerView.addSubview(uploadImageButton)
-        uploadImageButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
-        uploadImageButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
-        uploadImageButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
-        uploadImageButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        containerView.addSubview(uploadMediaButton)
+        uploadMediaButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
+        uploadMediaButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
+        uploadMediaButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
+        uploadMediaButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
         
         //UIButton "Send"
         sendButton.isEnabled = false
@@ -100,7 +107,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         //UITextField "Message Input"
         messageTextField.delegate = self
         containerView.addSubview(messageTextField)
-        messageTextField.leftAnchor.constraint(equalTo: uploadImageButton.rightAnchor, constant: 8).isActive = true
+        messageTextField.leftAnchor.constraint(equalTo: uploadMediaButton.rightAnchor, constant: 8).isActive = true
         messageTextField.rightAnchor.constraint(equalTo: sendButton.leftAnchor).isActive = true
         messageTextField.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
         messageTextField.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
@@ -119,10 +126,10 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         return containerView
     }()
     
-    let uploadImageButton: UIButton = {
+    let uploadMediaButton: UIButton = {
         let button = UIButton()
         button.setImage(#imageLiteral(resourceName: "uploadimage"), for: .normal)
-        button.addTarget(self, action: #selector(uploadImageButtonAction), for: .touchUpInside)
+        button.addTarget(self, action: #selector(uploadMediaButtonAction), for: .touchUpInside)
         button.backgroundColor = #colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -174,7 +181,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     }
     
     // MARK: - Upload Image To Firebase Storage
-    private func uploadMessageImage(selectedImage:UIImage?) {
+    private func uploadMessageImage(selectedImage:UIImage?, complition:@escaping (_ imageUrl:String)->()) {
         let imageName = UUID().uuidString
         let storageReference = Storage.storage().reference().child("message_images").child("\(imageName).png")
         if let image = selectedImage, let imageData = UIImageJPEGRepresentation(image, 0.1) {
@@ -182,8 +189,8 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
                 if error != nil { print(error!); return }
                 storageReference.downloadURL(completion: { (url, error) in
                     if error != nil { print(error!); return }
-                    if let imageUrlString = url?.absoluteString, let image = selectedImage {
-                        self.sendImage(imageUrl: imageUrlString, image:image)
+                    if let imageUrlString = url?.absoluteString {
+                        complition(imageUrlString)
                     }
                 })
             })
@@ -307,7 +314,9 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
             cell.messageBubbleView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
             cell.messageBubbleWidthAnchor?.constant = 200
         }
-
+        
+        cell.playButton.isHidden = message.videoUrl == nil
+        cell.message = message
     }
     
     private func getEstimatedFrameForText(text: String) -> CGRect {
@@ -393,30 +402,96 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         }
     }
     
+    func messageVideoViewDidTap(message: Message, bubbleView: UIView) {
+        if let videoUrl = message.videoUrl, let url = URL(string: videoUrl) {
+            player = AVPlayer(url: url)
+            playerLayer = AVPlayerLayer(player: player!)
+            playerLayer?.frame = bubbleView.bounds
+            bubbleView.layer.addSublayer(playerLayer!)
+            player?.play()
+        }
+    }
+    
+    func removePlayerLayer() {
+        playerLayer?.removeFromSuperlayer()
+        player?.pause()
+    }
+    
 }
 
 extension MessageLogController:UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
-    @objc func uploadImageButtonAction() {
+    @objc func uploadMediaButtonAction() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
-        imagePicker.allowsEditing = true
+//        imagePicker.allowsEditing = true
+        imagePicker.mediaTypes = [kUTTypeImage, kUTTypeMovie] as [String]
         present(imagePicker, animated: true, completion: nil)
     }
 
     // MARK: - UIImagePickerController Delegate
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
-        if let editedImage = info["UIImagePickerControllerEditedImage"] {
-            selectedImage = editedImage as? UIImage
-        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] {
-            selectedImage = originalImage as? UIImage
+        if let videoUrl = info[UIImagePickerControllerMediaURL] as? URL {
+            handleSelectedVideoWithUrl(videoUrl: videoUrl)
+        } else {
+            handleSelectedImageWithInfo(info: info)
         }
         dismiss(animated: true, completion: nil)
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         dismiss(animated: true, completion: nil)
+    }
+    
+    private func handleSelectedImageWithInfo(info:[String:Any]) {
+        if let editedImage = info["UIImagePickerControllerEditedImage"] {
+            selectedImage = editedImage as? UIImage
+        } else if let originalImage = info["UIImagePickerControllerOriginalImage"] {
+            selectedImage = originalImage as? UIImage
+        }
+    }
+    
+    private func handleSelectedVideoWithUrl(videoUrl:URL) {
+        let videoName = UUID().uuidString
+        let storageReference = Storage.storage().reference().child("message_videos").child("\(videoName).mov")
+        let uploadTask = storageReference.putFile(from: videoUrl, metadata: nil) { (storageMetadata, error) in
+            if error != nil { print(error!); return }
+            storageReference.downloadURL(completion: { (url, error) in
+                if error != nil { print(error!); return }
+                if let videoUrlString = url?.absoluteString {
+                    let thumbnailImage = self.generateThumbnailImageFromVideoUrl(videoFileUrl: videoUrl)
+                    self.uploadMessageImage(selectedImage: thumbnailImage, complition: { (imageUrl) in
+                        
+                        let properties: [String : Any] = ["imageUrl": imageUrl,
+                                                          "imageWidth": thumbnailImage.size.width,
+                                                          "imageHeight": thumbnailImage.size.height,
+                                                          "videoUrl":videoUrlString]
+                        self.sendMessageWithProperties(properties: properties)
+                    })
+                }
+            })
+        }
+        uploadTask.observe(.progress) { (snapshot) in
+            print(snapshot.progress?.completedUnitCount ?? "")
+        }
+        
+        uploadTask.observe(.success) { (snapshot) in
+            print("Upload task completed")
+        }
+    }
+    
+    private func generateThumbnailImageFromVideoUrl(videoFileUrl: URL) -> UIImage {
+        let asset = AVAsset(url: videoFileUrl)
+        let imageGenerator = AVAssetImageGenerator(asset: asset)
+        do {
+            let time = CMTimeMakeWithSeconds(1.0, 60)
+            let thumbnailCGImage = try imageGenerator.copyCGImage(at: time, actualTime: nil)
+            return UIImage(cgImage: thumbnailCGImage)
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return UIImage()
     }
     
 }
