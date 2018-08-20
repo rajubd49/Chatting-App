@@ -13,12 +13,6 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
 
     @IBOutlet weak var collectionView: UICollectionView!
     
-    var selectedImage: UIImage? {
-        didSet{
-            uploadMessageImage(selectedImage: selectedImage)
-        }
-    }
-    
     var user:User? {
         didSet {
             navigationItem.title = user?.name
@@ -30,7 +24,14 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         didSet {
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
+                self.scrollToBottom()
             }
+        }
+    }
+    
+    var selectedImage: UIImage? {
+        didSet{
+            uploadMessageImage(selectedImage: selectedImage)
         }
     }
     
@@ -163,11 +164,49 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
 
     // MARK: - UIButton Action
     @objc func sendAction() {
+        if let message = messageTextField.text {
+            let properties: [String : Any] = ["text": message]
+            sendMessageWithProperties(properties: properties)
+        }
+    }
+    
+    // MARK: - Upload Image To Firebase Storage
+    private func uploadMessageImage(selectedImage:UIImage?) {
+        let imageName = UUID().uuidString
+        let storageReference = Storage.storage().reference().child("message_images").child("\(imageName).png")
+        if let image = selectedImage, let imageData = UIImageJPEGRepresentation(image, 0.1) {
+            storageReference.putData(imageData, metadata: nil, completion: { (storageMetadata, error) in
+                if error != nil { print(error!); return }
+                storageReference.downloadURL(completion: { (url, error) in
+                    if error != nil { print(error!); return }
+                    if let imageUrlString = url?.absoluteString, let image = selectedImage {
+                        self.sendImage(imageUrl: imageUrlString, image:image)
+                    }
+                })
+            })
+        }
+    }
+    
+    // MARK: - Send Image
+    private func sendImage(imageUrl: String, image: UIImage) {
+        
+        let properties: [String : Any] = ["imageUrl": imageUrl,
+                                      "imageWidth": image.size.width,
+                                      "imageHeight": image.size.height]
+        sendMessageWithProperties(properties: properties)
+    }
+    
+    // MARK: - Send Message With Appropriate Properties
+    private func sendMessageWithProperties(properties:[String:Any]) {
         let databaseReference = Database.database().reference().child("messages")
         let childReference = databaseReference.childByAutoId()
-        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid, let message = messageTextField.text {
+        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid {
             let timestamp = NSNumber(value: Date().timeIntervalSince1970)
-            let values = ["text": message, "toId": toId,"fromId": fromId,"timestamp": timestamp] as [String : Any]
+            var values: [String : Any] = ["toId": toId,
+                                          "fromId": fromId,
+                                          "timestamp": timestamp]
+            //Key $0, Value $1
+            properties.forEach({values[$0] = $1})
             childReference.updateChildValues(values) { (error, dbRef) in
                 if error != nil {
                     print(error?.localizedDescription as Any)
@@ -181,45 +220,6 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
             }
             messageTextField.text = nil
             sendButton.isEnabled = false
-        }
-    }
-    
-    private func uploadMessageImage(selectedImage:UIImage?) {
-        let imageName = UUID().uuidString
-        let storageReference = Storage.storage().reference().child("message_images").child("\(imageName).png")
-        if let image = selectedImage, let imageData = UIImageJPEGRepresentation(image, 0.1) {
-            storageReference.putData(imageData, metadata: nil, completion: { (storageMetadata, error) in
-                if error != nil { print(error!); return }
-                storageReference.downloadURL(completion: { (url, error) in
-                    if error != nil { print(error!); return }
-                    if let imageUrlString = url?.absoluteString {
-                        self.sendImage(imageUrl: imageUrlString)
-                    }
-                })
-            })
-        }
-    }
-    
-    private func sendImage(imageUrl: String) {
-        let databaseReference = Database.database().reference().child("messages")
-        let childReference = databaseReference.childByAutoId()
-        if let toId = user?.id, let fromId = Auth.auth().currentUser?.uid {
-            let timestamp = NSNumber(value: Date().timeIntervalSince1970)
-            let values = ["imageUrl": imageUrl,
-                          "toId": toId,
-                          "fromId": fromId,
-                          "timestamp": timestamp] as [String : Any]
-            childReference.updateChildValues(values) { (error, dbRef) in
-                if error != nil {
-                    print(error?.localizedDescription as Any)
-                    return
-                }
-                let senderMessageRef = Database.database().reference().child("user_messages").child(fromId).child(toId)
-                let messageId = childReference.key
-                senderMessageRef.updateChildValues([messageId:1])
-                let recipientMessageRef = Database.database().reference().child("user_messages").child(toId).child(fromId)
-                recipientMessageRef.updateChildValues([messageId:1])
-            }
         }
     }
     
@@ -245,7 +245,6 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MessageCell", for: indexPath) as! MessageCell
         let message = messages[indexPath.item]
         setupCell(cell: cell, message: message)
-        cell.messageBubbleWidthAnchor?.constant = getEstimatedFrameForText(text: message.text ?? "").width + 24 //Padding
         return cell
     }
     
@@ -255,8 +254,13 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
                                  sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         var height:CGFloat = 80
-        if let text = messages[indexPath.item].text {
+        let message = messages[indexPath.item]
+        if let text = message.text {
             height = getEstimatedFrameForText(text: text).height + 24 //Padding
+        } else if let imageWidth = message.imageWidth?.floatValue, let imageHeight = message.imageHeight?.floatValue {
+            //height1/width1 = height2/width2
+            //So Find, height1 = height2/width2 * width1
+            height = CGFloat(imageHeight/imageWidth * 200)
         }
         return CGSize(width: getViewWidth(), height: height)
     }
@@ -286,14 +290,18 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         
         if let messageText = message.text {
             cell.messageTextView.text = messageText
+            cell.messageTextView.isHidden = false
             cell.messageImageView.isHidden = true
+            cell.messageBubbleWidthAnchor?.constant = getEstimatedFrameForText(text: message.text ?? "").width + 24 //Padding
         } else {
             guard let imageUrl = message.imageUrl else {
                 return
             }
             cell.messageImageView.loadImage(urlString: imageUrl)
+            cell.messageTextView.isHidden = true
             cell.messageImageView.isHidden = false
             cell.messageBubbleView.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 0)
+            cell.messageBubbleWidthAnchor?.constant = 200
         }
 
     }
@@ -304,9 +312,11 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         return NSString(string: text).boundingRect(with: size, options: options, attributes: [kCTFontAttributeName as NSAttributedStringKey : UIFont.systemFont(ofSize: 15)], context: nil)
     }
     
-    private func scrollToBottomForMessages() {
-        let lastMessageIndex = collectionView.numberOfItems(inSection: 0) - 1
-        collectionView.scrollToItem(at: IndexPath(item: lastMessageIndex, section: 0), at: .bottom, animated: true)
+    private func scrollToBottom() {
+        if messages.count > 0 {
+            let indexPath = IndexPath(item: messages.count - 1, section: 0)
+            collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        }
     }
     
     func getViewWidth() -> CGFloat {
@@ -324,6 +334,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         if let keyboardFrame = (notification.userInfo?[UIKeyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             collectionView.contentInset = UIEdgeInsetsMake(8, 0, keyboardFrame.height + 8, 0)
             collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, keyboardFrame.height + 8, 0)
+            scrollToBottom()
         }
     }
     
