@@ -13,6 +13,8 @@ class MessageCell: UICollectionViewCell {
     static let lightBlueColor = #colorLiteral(red: 0.2588235438, green: 0.7568627596, blue: 0.9686274529, alpha: 1)
     static let lightGrayColor = #colorLiteral(red: 0.9411764706, green: 0.9411764706, blue: 0.9411764706, alpha: 1)
     
+    var messageLogController: MessageLogController?
+    
     let messageTextView: UITextView = {
         let textView = UITextView()
         textView.isScrollEnabled = false
@@ -41,14 +43,23 @@ class MessageCell: UICollectionViewCell {
         return imageView
     }()
     
-    let messageImageView: UIImageView = {
+    lazy var messageImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.isUserInteractionEnabled = true
+        // Gesture recognizer won't work unless you put lazy var insted of let :)
+        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tappedMessageImage)))
         return imageView
     }()
+    
+    @objc func tappedMessageImage(tapGesture: UITapGestureRecognizer) {
+        if let imageView =  tapGesture.view as? UIImageView {
+            messageLogController?.messageImageViewDidTap(tappedImageView: imageView)
+        }
+    }
     
     var messageBubbleWidthAnchor: NSLayoutConstraint?
     var messageBubbleLeftAnchor: NSLayoutConstraint?

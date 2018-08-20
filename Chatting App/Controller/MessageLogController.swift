@@ -12,6 +12,9 @@ import Firebase
 class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    var tappedImageViewFrame: CGRect?
+    var blackBackgroundView: UIView?
+    var selectedImageView: UIImageView?
     
     var user:User? {
         didSet {
@@ -79,7 +82,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         containerView.backgroundColor = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
         containerView.frame = CGRect(x: 0, y: 0, width:view.bounds.width, height: 50)
         
-        //UIImage "Send Image"
+        //UIButton "Send Image"
         containerView.addSubview(uploadImageButton)
         uploadImageButton.leftAnchor.constraint(equalTo: containerView.leftAnchor, constant: 8).isActive = true
         uploadImageButton.centerYAnchor.constraint(equalTo: containerView.centerYAnchor).isActive = true
@@ -268,6 +271,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     // MARK: - Utils
     private func setupCell(cell:MessageCell, message: Message) {
         
+        cell.messageLogController = self
         if let imageUrl = user?.imageurl {
             cell.profileImageView.loadImage(urlString: imageUrl)
         }
@@ -341,6 +345,52 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     @objc func keyboardWillHide(notification: NSNotification) {
         collectionView.contentInset = UIEdgeInsetsMake(8, 0, 58, 0)
         collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, 58, 0)
+    }
+    
+    // MARK: - Perform Image Tap Action
+    func messageImageViewDidTap(tappedImageView: UIImageView) {
+        
+        if let imageViewFrame = tappedImageView.superview?.convert(tappedImageView.frame, to: nil) {
+            tappedImageViewFrame = imageViewFrame
+            selectedImageView = tappedImageView
+            selectedImageView?.isHidden = true
+            let zoomingImageView = UIImageView(frame: imageViewFrame)
+            zoomingImageView.image = tappedImageView.image
+            zoomingImageView.isUserInteractionEnabled = true
+            zoomingImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(zoomOutTappedImage)))
+            
+            if let keyWindow = UIApplication.shared.keyWindow {
+                blackBackgroundView = UIView(frame: keyWindow.frame)
+                blackBackgroundView?.backgroundColor = #colorLiteral(red: 0, green: 0, blue: 0, alpha: 1)
+                blackBackgroundView?.alpha = 0
+                
+                keyWindow.addSubview(blackBackgroundView!)
+                keyWindow.addSubview(zoomingImageView)
+                
+                UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                    self.blackBackgroundView?.alpha = 1
+                    self.inputContainerView.alpha = 0
+                    let imageViewHeight = imageViewFrame.height/imageViewFrame.width * keyWindow.frame.width
+                    zoomingImageView.frame = CGRect(x: 0, y: 0, width: keyWindow.frame.width, height: imageViewHeight)
+                    zoomingImageView.center = keyWindow.center
+                }, completion: nil)
+            }
+        }
+    }
+    
+    @objc func zoomOutTappedImage(tapGesture: UITapGestureRecognizer) {
+        if let zoomOutImageView =  tapGesture.view as? UIImageView, let tappedImageViewFrame = tappedImageViewFrame {
+            zoomOutImageView.layer.cornerRadius = 16
+            zoomOutImageView.layer.masksToBounds = true
+            UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 1, options: .curveEaseOut, animations: {
+                zoomOutImageView.frame = tappedImageViewFrame
+                self.blackBackgroundView?.alpha = 0
+                self.inputContainerView.alpha = 1
+            }) { (completed) in
+                zoomOutImageView.removeFromSuperview()
+                self.selectedImageView?.isHidden = false
+            }
+        }
     }
     
 }
