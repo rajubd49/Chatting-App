@@ -17,9 +17,9 @@ class MessagesController: UITableViewController {
     
     var messages = [Message] () {
         didSet {
-            DispatchQueue.main.async {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
                 self.tableView.reloadData()
-            }
+            })
         }
     }
     var messageDictionary = [String:Message]()
@@ -79,6 +79,11 @@ class MessagesController: UITableViewController {
                 self.fetchMessagesWithMessageId(messageId: messageId)
             }, withCancel: nil)
         }, withCancel: nil)
+        
+        databaseReference.observe(.childRemoved, with: { (snapshot) in
+            self.messageDictionary.removeValue(forKey: snapshot.key)
+            self.reloadSortedMessages()
+        }, withCancel: nil)
     }
     
     fileprivate func fetchMessagesWithMessageId(messageId: String) {
@@ -88,13 +93,17 @@ class MessagesController: UITableViewController {
                 let message = Message(dictionary: dictionary)
                 if let chatPartnerId = message.chatPartnerId() {
                     self.messageDictionary[chatPartnerId] = message
-                    self.messages = Array(self.messageDictionary.values)
-                    self.messages.sort(by: { (message1, message2) -> Bool in
-                        return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
-                    })
+                    self.reloadSortedMessages()
                 }
             }
         }, withCancel: nil)
+    }
+    
+    private func reloadSortedMessages() {
+        self.messages = Array(self.messageDictionary.values)
+        self.messages.sort(by: { (message1, message2) -> Bool in
+            return (message1.timestamp?.intValue)! > (message2.timestamp?.intValue)!
+        })
     }
 
     @objc private func signoutAction() {
@@ -126,7 +135,7 @@ class MessagesController: UITableViewController {
         }
     }
     
-    // MARK: - Table view data source
+    // MARK: - Table view datasource
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.messages.count
@@ -139,7 +148,28 @@ class MessagesController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if let uid = Auth.auth().currentUser?.uid {
+                let message = messages[indexPath.row]
+                if let chatPartnerId = message.chatPartnerId() {
+                    Database.database().reference().child("user_messages").child(uid).child(chatPartnerId).removeValue { (error, reference) in
+                        if error != nil {print(error?.localizedDescription ?? ""); return}
+                        self.messageDictionary.removeValue(forKey: chatPartnerId)
+                        self.reloadSortedMessages()
+                    }
+                }
+            }
+        }
+    }
+    
+    // MARK: - Table view delegate
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let message = messages[indexPath.row]
         if let chatPartnerId = message.chatPartnerId() {
         Database.database().reference().child("users").child(chatPartnerId).observeSingleEvent(of: .value, with: { (dataSnapshot) in

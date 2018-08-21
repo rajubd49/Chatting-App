@@ -402,19 +402,25 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         }
     }
     
-    func messageVideoViewDidTap(message: Message, bubbleView: UIView) {
-        if let videoUrl = message.videoUrl, let url = URL(string: videoUrl) {
+    func messageVideoViewDidTap(cell:MessageCell) {
+        if let videoUrl = cell.message?.videoUrl, let url = URL(string: videoUrl) {
             player = AVPlayer(url: url)
             playerLayer = AVPlayerLayer(player: player!)
-            playerLayer?.frame = bubbleView.bounds
-            bubbleView.layer.addSublayer(playerLayer!)
+            playerLayer?.frame = cell.messageBubbleView.bounds
+            cell.messageBubbleView.layer.addSublayer(playerLayer!)
             player?.play()
+            
+            cell.activityIndicator.startAnimating()
+            cell.playButton.isHidden  = true
         }
     }
     
-    func removePlayerLayer() {
+    func removePlayerLayer(cell:MessageCell) {
         playerLayer?.removeFromSuperlayer()
         player?.pause()
+        
+        cell.activityIndicator.stopAnimating()
+        cell.playButton.isHidden  = false
     }
     
 }

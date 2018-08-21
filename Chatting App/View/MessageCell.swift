@@ -65,6 +65,13 @@ class MessageCell: UICollectionViewCell {
         return button
     }()
     
+    let activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        activityIndicator.hidesWhenStopped = true
+        activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        return activityIndicator
+    }()
+    
     @objc func tappedMessageImage(tapGesture: UITapGestureRecognizer) {
         if message?.videoUrl != nil {
             return
@@ -75,14 +82,12 @@ class MessageCell: UICollectionViewCell {
     }
     
     @objc func tappedPlayButton() {
-        if let message = message {
-            messageLogController?.messageVideoViewDidTap(message: message, bubbleView: messageBubbleView)
-        }
+        messageLogController?.messageVideoViewDidTap(cell:self)
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        messageLogController?.removePlayerLayer()
+        messageLogController?.removePlayerLayer(cell:self)
     }
     
     var messageBubbleWidthAnchor: NSLayoutConstraint?
@@ -97,6 +102,7 @@ class MessageCell: UICollectionViewCell {
         addSubview(messageTextView)
         messageBubbleView.addSubview(messageImageView)
         messageBubbleView.addSubview(playButton)
+        messageBubbleView.addSubview(activityIndicator)
         
         //ImageView Constrain
         messageImageView.leftAnchor.constraint(equalTo: messageBubbleView.leftAnchor).isActive = true
@@ -107,8 +113,14 @@ class MessageCell: UICollectionViewCell {
         //Button Constrain
         playButton.centerXAnchor.constraint(equalTo: messageBubbleView.centerXAnchor).isActive = true
         playButton.centerYAnchor.constraint(equalTo: messageBubbleView.centerYAnchor).isActive = true
-        playButton.widthAnchor.constraint(equalToConstant: 80.0).isActive = true
-        playButton.heightAnchor.constraint(equalToConstant: 80.0).isActive = true
+        playButton.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
+        playButton.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
+        
+        //ActivityIndicator
+        activityIndicator.centerXAnchor.constraint(equalTo: messageBubbleView.centerXAnchor).isActive = true
+        activityIndicator.centerYAnchor.constraint(equalTo: messageBubbleView.centerYAnchor).isActive = true
+        activityIndicator.widthAnchor.constraint(equalToConstant: 50.0).isActive = true
+        activityIndicator.heightAnchor.constraint(equalToConstant: 50.0).isActive = true
 
         //ImageView Constrain
         profileImageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 8).isActive = true
