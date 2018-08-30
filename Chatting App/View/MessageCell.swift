@@ -36,7 +36,7 @@ class MessageCell: UICollectionViewCell {
     
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = #imageLiteral(resourceName: "chat")
+        imageView.image = #imageLiteral(resourceName: "avatar")
         imageView.contentMode = .scaleAspectFill
         imageView.layer.cornerRadius = 16
         imageView.layer.masksToBounds = true

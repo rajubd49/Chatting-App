@@ -31,7 +31,9 @@ class LoginController: UIViewController {
     }
     
     private func updateViewContentForSelectedSegment() {
+        self.imageView.image = #imageLiteral(resourceName: "avatar")
         self.imageView.isUserInteractionEnabled = segmentControl.selectedSegmentIndex == 1
+        self.imageView.isHidden = segmentControl.selectedSegmentIndex == 0
         nameTextField.isHidden = segmentControl.selectedSegmentIndex == 0
         let title = segmentControl.titleForSegment(at: segmentControl.selectedSegmentIndex)
         signButton.setTitle(title, for: .normal)
@@ -80,8 +82,6 @@ class LoginController: UIViewController {
                                 if err != nil { print(err!); return }
                                 self.activityIndicator.stopAnimating()
                                 self.segmentControl.selectedSegmentIndex = 0
-                                self.imageView.image = #imageLiteral(resourceName: "chat")
-                                self.imageView.isUserInteractionEnabled = false
                                 self.updateViewContentForSelectedSegment()
                             })
                         }

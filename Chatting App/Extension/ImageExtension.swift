@@ -13,7 +13,7 @@ fileprivate let imageCache = NSCache<NSString, UIImage>()
 
 extension UIImageView {
     func loadImage(urlString: String) {
-        self.image = nil
+        self.image = #imageLiteral(resourceName: "avatar")
         if let imageFromCache = imageCache.object(forKey: urlString as NSString) {
             self.image = imageFromCache
             return
@@ -33,6 +33,6 @@ extension UIImageView {
     }
     
     func showUnavailableImage() {
-        self.image = #imageLiteral(resourceName: "chat")
+        self.image = #imageLiteral(resourceName: "avatar")
     }
 }
