@@ -14,12 +14,16 @@ import AVFoundation
 class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
 
     @IBOutlet weak var collectionView: UICollectionView!
+    private let messageHeaderCellReuseID : String = "MessageHeaderCell"
     
     var tappedImageViewFrame: CGRect?
     var blackBackgroundView: UIView?
     var selectedImageView: UIImageView?
     var player: AVPlayer?
     var playerLayer: AVPlayerLayer?
+    
+    let dateFormatter = DateFormatter()
+    var userMessages = [[Message]]()
     
     var user:User? {
         didSet {
@@ -30,6 +34,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     
     var messages = [Message] () {
         didSet {
+            groupedUserMessages()
             DispatchQueue.main.async {
                 self.collectionView.reloadData()
                 self.scrollToBottom()
@@ -49,6 +54,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     override func viewDidLoad() {
         super.viewDidLoad()
         collectionView.register(MessageCell.self, forCellWithReuseIdentifier: "MessageCell")
+        collectionView.register(MessageHeaderCell.self, forSupplementaryViewOfKind: UICollectionElementKindSectionHeader, withReuseIdentifier: messageHeaderCellReuseID)
         collectionView.alwaysBounceVertical = true
         collectionView.contentInset = UIEdgeInsetsMake(8, 0, 58, 0)
         collectionView.scrollIndicatorInsets = UIEdgeInsetsMake(8, 0, 58, 0)
@@ -107,6 +113,22 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
                 }
             }, withCancel: nil)
         }, withCancel: nil)
+    }
+    
+    private func groupedUserMessages() {
+        userMessages.removeAll()
+        let groupedMessages = Dictionary(grouping: messages) { (element) -> Date in
+            if let timestamp = element.timestamp?.doubleValue {
+                return dateFormatter.date(from: dateStringFromTimestamp(timestamp: timestamp)) ?? Date()
+            }
+            return Date()
+        }
+        let sortedKeys = groupedMessages.keys.sorted()
+        sortedKeys.forEach { (key) in
+            if let values = groupedMessages[key] {
+                userMessages.append(values)
+            }
+        }
     }
 
     // MARK: - UIButton Action
@@ -184,13 +206,18 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     }
     
     // MARK: - CollectionView Datasource
+    
+    func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return userMessages.count
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return messages.count
+        return userMessages[section].count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "MessageCell", for: indexPath) as! MessageCell
-        let message = messages[indexPath.item]
+        let message = userMessages[indexPath.section][indexPath.item]
         setupCell(cell: cell, message: message)
         return cell
     }
@@ -201,7 +228,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
                                  sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         var height:CGFloat = 80
-        let message = messages[indexPath.item]
+        let message = userMessages[indexPath.section][indexPath.item]
         if let text = message.text {
             height = getEstimatedFrameForText(text: text).height + 24 //Padding
         } else if let imageWidth = message.imageWidth?.floatValue, let imageHeight = message.imageHeight?.floatValue {
@@ -212,6 +239,29 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
         return CGSize(width: getViewWidth(), height: height)
     }
     
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        return CGSize(width: getViewWidth(), height: 30)
+    }
+
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        var reusableView : UICollectionReusableView? = nil
+        if (kind == UICollectionElementKindSectionHeader) {
+            let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionElementKindSectionHeader, withReuseIdentifier: messageHeaderCellReuseID, for: indexPath as IndexPath) as? MessageHeaderCell
+            let firstSectionMessage = userMessages[indexPath.section].first
+            if let timestamp = firstSectionMessage?.timestamp?.doubleValue {
+                headerView?.headerLabel.text = dateStringFromTimestamp(timestamp: timestamp)
+            }
+            reusableView = headerView
+        }
+        return reusableView!
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        let frame : CGRect = self.view.frame
+        let margin  = (frame.width - 90 * 3) / 6.0
+        return UIEdgeInsetsMake(10, margin, 10, margin)
+    }
+
     // MARK: - Utils
     private func setupCell(cell:MessageCell, message: Message) {
         
@@ -263,14 +313,19 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     }
     
     private func scrollToBottom() {
-        if messages.count > 0 {
-            let indexPath = IndexPath(item: messages.count - 1, section: 0)
-            collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-        }
+//        if messages.count > 0 {
+//            let indexPath = IndexPath(item: messages.count - 1, section: 0)
+//            collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+//        }
     }
     
     func getViewWidth() -> CGFloat {
         return UIScreen.main.bounds.width
+    }
+    
+    func dateStringFromTimestamp(timestamp: Double) -> String {
+        dateFormatter.dateFormat = "dd/MM/yyyy"
+        return dateFormatter.string(from: Date(timeIntervalSince1970:timestamp))
     }
     
     // MARK: - UIKeyboardNotification
