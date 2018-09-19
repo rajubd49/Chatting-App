@@ -257,9 +257,7 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        let frame : CGRect = self.view.frame
-        let margin  = (frame.width - 90 * 3) / 6.0
-        return UIEdgeInsetsMake(10, margin, 10, margin)
+        return UIEdgeInsetsMake(8, 0, 8, 0)
     }
 
     // MARK: - Utils
@@ -313,18 +311,24 @@ class MessageLogController: UIViewController,UITextFieldDelegate, UICollectionVi
     }
     
     private func scrollToBottom() {
-//        if messages.count > 0 {
-//            let indexPath = IndexPath(item: messages.count - 1, section: 0)
-//            collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
-//        }
+        guard collectionView.numberOfSections > 0 else {
+            return
+        }
+        let lastSection = collectionView.numberOfSections - 1
+        guard collectionView.numberOfItems(inSection: lastSection) > 0 else {
+            return
+        }
+        let lastItemIndexPath = IndexPath(item: collectionView.numberOfItems(inSection: lastSection) - 1,
+                                          section: lastSection)
+        collectionView.scrollToItem(at: lastItemIndexPath, at: .bottom, animated: true)
     }
-    
+
     func getViewWidth() -> CGFloat {
         return UIScreen.main.bounds.width
     }
     
     func dateStringFromTimestamp(timestamp: Double) -> String {
-        dateFormatter.dateFormat = "dd/MM/yyyy"
+        dateFormatter.dateFormat = "dd MMM, yyyy"
         return dateFormatter.string(from: Date(timeIntervalSince1970:timestamp))
     }
     

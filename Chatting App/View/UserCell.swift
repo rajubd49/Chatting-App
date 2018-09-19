@@ -28,7 +28,7 @@ class UserCell: UITableViewCell {
             if let timestamp = message?.timestamp?.doubleValue {
                 let date = Date(timeIntervalSince1970:timestamp)
                 let dateFormatter = DateFormatter()
-                dateFormatter.dateFormat = "hh:mm:ss a"
+                dateFormatter.dateFormat = "dd MMM, yy hh:mm a"
                 dateFormatter.timeZone = TimeZone(abbreviation: "UTC+6")
                 timestampLabel?.text = dateFormatter.string(from: date)
             }
